@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 enum ClipsTab: String, CaseIterable {
     case history = "剪贴板"
@@ -9,6 +10,7 @@ struct MenuBarView: View {
     @ObservedObject var historyStore: HistoryStore
     @ObservedObject var kvStore: KeyValueStore
     var onCopy: (String) -> Void
+    var onCopyImage: ((NSImage) -> Void)?
     var onQuit: () -> Void
     
     @State private var selectedTab: ClipsTab = .history
@@ -127,7 +129,16 @@ struct MenuBarView: View {
             } else {
                 List {
                     ForEach(filteredHistory) { item in
-                        ClipboardRow(item: item, onCopy: { onCopy(item.content) })
+                        ClipboardRow(
+                            item: item,
+                            onCopy: {
+                                if item.contentType == .text {
+                                    onCopy(item.content)
+                                } else if let image = item.image {
+                                    onCopyImage?(image)
+                                }
+                            }
+                        )
                     }
                 }
             }
@@ -141,14 +152,39 @@ struct ClipboardRow: View {
     var onCopy: () -> Void
     
     @State private var isHovering = false
+    @State private var showPreview = false
+    @State private var hoverTimer: Timer?
     
     var body: some View {
         Button(action: onCopy) {
             HStack {
-                Text(item.content.trimmingCharacters(in: .whitespacesAndNewlines))
-                    .lineLimit(1)
-                    .truncationMode(.tail)
+                // 根据类型显示不同内容
+                if item.contentType == .image {
+                    // 图片类型：显示小缩略图和描述
+                    if let thumbnail = item.thumbnail(maxSize: 32) {
+                        Image(nsImage: thumbnail)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 32, height: 32)
+                            .cornerRadius(4)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 4)
+                                    .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
+                            )
+                    }
+                    
+                    Text(item.content)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                } else {
+                    // 文本类型
+                    Text(item.content.trimmingCharacters(in: .whitespacesAndNewlines))
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
+                
                 Spacer()
+                
                 if isHovering {
                     Image(systemName: "doc.on.doc")
                         .foregroundColor(.secondary)
@@ -164,6 +200,45 @@ struct ClipboardRow: View {
         .buttonStyle(.plain)
         .onHover { hovering in
             isHovering = hovering
+            
+            // 图片悬停预览逻辑
+            if item.contentType == .image {
+                if hovering {
+                    // 延迟显示预览
+                    hoverTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
+                        showPreview = true
+                    }
+                } else {
+                    hoverTimer?.invalidate()
+                    hoverTimer = nil
+                    showPreview = false
+                }
+            }
         }
+        .popover(isPresented: $showPreview, arrowEdge: .trailing) {
+            ImagePreviewPopover(item: item)
+        }
+    }
+}
+
+// MARK: - Image Preview Popover
+struct ImagePreviewPopover: View {
+    let item: ClipboardItem
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            if let image = item.image {
+                Image(nsImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: 300, maxHeight: 300)
+                    .cornerRadius(8)
+            }
+            
+            Text(item.content)
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding(12)
     }
 }

@@ -181,6 +181,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             onCopy: { [weak self] content in
                 self?.clipboardService.copyToClipboard(content)
             },
+            onCopyImage: { [weak self] image in
+                self?.clipboardService.copyImageToClipboard(image)
+            },
             onQuit: {
                 NSApplication.shared.terminate(nil)
             }
@@ -229,6 +232,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 self?.clipboardService.copyToClipboard(content)
                 self?.closePopover(sender: nil)
             },
+            onCopyImage: { [weak self] image in
+                self?.clipboardService.copyImageToClipboard(image)
+                self?.closePopover(sender: nil)
+            },
             onQuit: {
                 NSApplication.shared.terminate(nil)
             }
@@ -275,6 +282,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             kvStore: kvStore,
             onCopy: { [weak self] content in
                 self?.clipboardService.copyToClipboard(content)
+                self?.closeFloatingWindow()
+            },
+            onCopyImage: { [weak self] image in
+                self?.clipboardService.copyImageToClipboard(image)
                 self?.closeFloatingWindow()
             },
             onQuit: {
