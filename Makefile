@@ -18,6 +18,7 @@ SOURCES = $(SRC_DIR)/Models.swift \
           $(SRC_DIR)/KeyValueStore.swift \
           $(SRC_DIR)/PixelTheme.swift \
           $(SRC_DIR)/KeyValueView.swift \
+          $(SRC_DIR)/JsonFormatterView.swift \
           $(SRC_DIR)/RestReminderStore.swift \
           $(SRC_DIR)/RestReminderView.swift \
           $(SRC_DIR)/MenuBarView.swift \

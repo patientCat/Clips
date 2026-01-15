@@ -4,6 +4,7 @@ import AppKit
 enum ClipsTab: String, CaseIterable {
     case history = "CLIPS"
     case keyValue = "KEYS"
+    case json = "JSON"
     case reminder = "TIMER"
 }
 
@@ -75,6 +76,8 @@ struct MenuBarView: View {
                     historyView
                 } else if selectedTab == .keyValue {
                     KeyValueView(kvStore: kvStore, onCopyValue: onCopy)
+                } else if selectedTab == .json {
+                    JsonFormatterView(onCopy: onCopy)
                 } else {
                     RestReminderView(store: reminderStore)
                 }
@@ -115,6 +118,7 @@ struct MenuBarView: View {
         switch tab {
         case .history: return "doc.on.clipboard"
         case .keyValue: return "key"
+        case .json: return "curlybraces"
         case .reminder: return "bell"
         }
     }
