@@ -12,18 +12,20 @@ struct ClipboardItem: Identifiable, Codable, Equatable {
     let content: String  // 文本内容或图片描述
     let imageData: Data? // 图片数据（PNG格式）
     let timestamp: Date
+    var isFavorite: Bool = false  // 收藏状态
     
     // 文本初始化
-    init(id: UUID = UUID(), content: String, timestamp: Date = Date()) {
+    init(id: UUID = UUID(), content: String, timestamp: Date = Date(), isFavorite: Bool = false) {
         self.id = id
         self.contentType = .text
         self.content = content
         self.imageData = nil
         self.timestamp = timestamp
+        self.isFavorite = isFavorite
     }
     
     // 图片初始化
-    init(id: UUID = UUID(), image: NSImage, timestamp: Date = Date()) {
+    init(id: UUID = UUID(), image: NSImage, timestamp: Date = Date(), isFavorite: Bool = false) {
         self.id = id
         self.contentType = .image
         
@@ -41,6 +43,7 @@ struct ClipboardItem: Identifiable, Codable, Equatable {
         }
         
         self.timestamp = timestamp
+        self.isFavorite = isFavorite
     }
     
     // 获取 NSImage（用于显示）

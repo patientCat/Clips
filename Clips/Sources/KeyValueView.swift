@@ -156,17 +156,18 @@ struct PixelTagButton: View {
         Button(action: action) {
             Text(tag)
                 .font(PixelTheme.pixelFont(size: 10))
-                .foregroundColor(isSelected ? PixelTheme.background : PixelTheme.accent)
+                .foregroundColor(isSelected ? PixelTheme.background : PixelTheme.textPrimary)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 4)
                 .background(
                     Rectangle()
-                        .fill(isSelected ? PixelTheme.accent : PixelTheme.accent.opacity(0.2))
+                        .fill(isSelected ? PixelTheme.accent : PixelTheme.accent.opacity(0.25))
                 )
                 .overlay(
                     Rectangle()
                         .stroke(PixelTheme.accent, lineWidth: 1)
                 )
+                .shadow(color: isSelected ? PixelTheme.accent.opacity(0.4) : .clear, radius: 3)
         }
         .buttonStyle(.plain)
     }
@@ -189,6 +190,7 @@ struct PixelKeyValueRow: View {
                 Text(item.key)
                     .font(PixelTheme.pixelFontBold(size: 13))
                     .foregroundColor(PixelTheme.accent)
+                    .shadow(color: PixelTheme.accent.opacity(0.4), radius: 2)
                     .lineLimit(1)
                 
                 Spacer()
@@ -199,6 +201,7 @@ struct PixelKeyValueRow: View {
                             Text("[CPY]")
                                 .font(PixelTheme.pixelFont(size: 10))
                                 .foregroundColor(PixelTheme.secondary)
+                                .shadow(color: PixelTheme.secondary.opacity(0.4), radius: 2)
                         }
                         .buttonStyle(.plain)
                         
@@ -206,6 +209,7 @@ struct PixelKeyValueRow: View {
                             Text("[EDT]")
                                 .font(PixelTheme.pixelFont(size: 10))
                                 .foregroundColor(PixelTheme.warning)
+                                .shadow(color: PixelTheme.warning.opacity(0.4), radius: 2)
                         }
                         .buttonStyle(.plain)
                         
@@ -213,6 +217,7 @@ struct PixelKeyValueRow: View {
                             Text("[DEL]")
                                 .font(PixelTheme.pixelFont(size: 10))
                                 .foregroundColor(PixelTheme.danger)
+                                .shadow(color: PixelTheme.danger.opacity(0.4), radius: 2)
                         }
                         .buttonStyle(.plain)
                     }
@@ -231,12 +236,13 @@ struct PixelKeyValueRow: View {
             HStack(spacing: 8) {
                 Text("VAL:")
                     .font(PixelTheme.pixelFont(size: 11))
-                    .foregroundColor(PixelTheme.textMuted)
+                    .foregroundColor(PixelTheme.textSecondary)
                 
                 if showValue {
                     Text(item.value)
                         .font(PixelTheme.pixelFont(size: 11))
                         .foregroundColor(PixelTheme.primary)
+                        .shadow(color: PixelTheme.primary.opacity(0.3), radius: 2)
                         .lineLimit(1)
                 } else {
                     Text(String(repeating: "*", count: min(item.value.count, 16)))
@@ -247,7 +253,7 @@ struct PixelKeyValueRow: View {
                 Button(action: { showValue.toggle() }) {
                     Text(showValue ? "[HIDE]" : "[SHOW]")
                         .font(PixelTheme.pixelFont(size: 10))
-                        .foregroundColor(PixelTheme.textSecondary)
+                        .foregroundColor(PixelTheme.textPrimary)
                 }
                 .buttonStyle(.plain)
             }
@@ -262,8 +268,8 @@ struct PixelKeyValueRow: View {
             }
         }
         .padding(10)
-        .background(isHovering ? PixelTheme.primary.opacity(0.1) : PixelTheme.cardBackground)
-        .pixelBorder(color: isHovering ? PixelTheme.primary : PixelTheme.border, width: 1)
+        .background(isHovering ? PixelTheme.primary.opacity(0.15) : PixelTheme.cardBackground)
+        .pixelBorder(color: isHovering ? PixelTheme.primary : PixelTheme.borderHighlight, width: 1)
         .contentShape(Rectangle())
         .onHover { hovering in
             isHovering = hovering
@@ -293,34 +299,37 @@ struct PixelAddKeyValueSheet: View {
             Text("[ ADD NEW KEY ]")
                 .font(PixelTheme.pixelFontBold(size: 16))
                 .foregroundColor(PixelTheme.primary)
+                .shadow(color: PixelTheme.primary.opacity(0.5), radius: 4)
             
-            PixelDivider()
+            PixelDivider(color: PixelTheme.primary)
             
             VStack(alignment: .leading, spacing: 12) {
                 // Key field
                 VStack(alignment: .leading, spacing: 4) {
                     Text("> KEY *")
                         .font(PixelTheme.pixelFont(size: 11))
-                        .foregroundColor(PixelTheme.textSecondary)
+                        .foregroundColor(PixelTheme.textPrimary)
                     TextField("ENTER_KEY_NAME", text: $key)
                         .font(PixelTheme.pixelFont(size: 13))
                         .foregroundColor(PixelTheme.textPrimary)
+                        .textFieldStyle(.plain)
                         .padding(8)
-                        .background(PixelTheme.background)
-                        .pixelBorder()
+                        .background(PixelTheme.cardBackground)
+                        .pixelBorder(color: PixelTheme.borderHighlight)
                 }
                 
                 // Value field
                 VStack(alignment: .leading, spacing: 4) {
                     Text("> VALUE *")
                         .font(PixelTheme.pixelFont(size: 11))
-                        .foregroundColor(PixelTheme.textSecondary)
+                        .foregroundColor(PixelTheme.textPrimary)
                     SecureField("ENTER_SECRET_VALUE", text: $value)
                         .font(PixelTheme.pixelFont(size: 13))
                         .foregroundColor(PixelTheme.textPrimary)
+                        .textFieldStyle(.plain)
                         .padding(8)
-                        .background(PixelTheme.background)
-                        .pixelBorder()
+                        .background(PixelTheme.cardBackground)
+                        .pixelBorder(color: PixelTheme.borderHighlight)
                 }
                 
                 // Description field
@@ -331,9 +340,10 @@ struct PixelAddKeyValueSheet: View {
                     TextField("OPTIONAL_DESCRIPTION", text: $description)
                         .font(PixelTheme.pixelFont(size: 13))
                         .foregroundColor(PixelTheme.textPrimary)
+                        .textFieldStyle(.plain)
                         .padding(8)
-                        .background(PixelTheme.background)
-                        .pixelBorder()
+                        .background(PixelTheme.cardBackground)
+                        .pixelBorder(color: PixelTheme.borderHighlight)
                 }
                 
                 // Tags field
@@ -344,9 +354,10 @@ struct PixelAddKeyValueSheet: View {
                     TextField("TAG1, TAG2, TAG3", text: $tagsText)
                         .font(PixelTheme.pixelFont(size: 13))
                         .foregroundColor(PixelTheme.textPrimary)
+                        .textFieldStyle(.plain)
                         .padding(8)
-                        .background(PixelTheme.background)
-                        .pixelBorder()
+                        .background(PixelTheme.cardBackground)
+                        .pixelBorder(color: PixelTheme.borderHighlight)
                     
                     // Existing tags
                     if !kvStore.allTags.isEmpty {
@@ -354,14 +365,14 @@ struct PixelAddKeyValueSheet: View {
                             HStack(spacing: 4) {
                                 Text("EXISTING:")
                                     .font(PixelTheme.pixelFont(size: 10))
-                                    .foregroundColor(PixelTheme.textMuted)
+                                    .foregroundColor(PixelTheme.textSecondary)
                                 ForEach(kvStore.allTags, id: \.self) { tag in
                                     Button(action: {
                                         if !tags.contains(tag) {
                                             tagsText = tagsText.isEmpty ? tag : "\(tagsText), \(tag)"
                                         }
                                     }) {
-                                        PixelTag(text: tag.uppercased(), color: PixelTheme.textSecondary)
+                                        PixelTag(text: tag.uppercased(), color: PixelTheme.secondary)
                                     }
                                     .buttonStyle(.plain)
                                 }
@@ -371,14 +382,14 @@ struct PixelAddKeyValueSheet: View {
                 }
             }
             
-            PixelDivider()
+            PixelDivider(color: PixelTheme.borderHighlight)
             
             // Buttons
             HStack {
                 Button(action: { isPresented = false }) {
                     Text("[ CANCEL ]")
                         .font(PixelTheme.pixelFontBold(size: 12))
-                        .foregroundColor(PixelTheme.textSecondary)
+                        .foregroundColor(PixelTheme.textPrimary)
                 }
                 .buttonStyle(PixelButtonStyle(backgroundColor: PixelTheme.cardBackground))
                 .keyboardShortcut(.escape)
@@ -432,34 +443,37 @@ struct PixelEditKeyValueSheet: View {
             Text("[ EDIT KEY ]")
                 .font(PixelTheme.pixelFontBold(size: 16))
                 .foregroundColor(PixelTheme.warning)
+                .shadow(color: PixelTheme.warning.opacity(0.5), radius: 4)
             
-            PixelDivider()
+            PixelDivider(color: PixelTheme.warning)
             
             VStack(alignment: .leading, spacing: 12) {
                 // Key field
                 VStack(alignment: .leading, spacing: 4) {
                     Text("> KEY *")
                         .font(PixelTheme.pixelFont(size: 11))
-                        .foregroundColor(PixelTheme.textSecondary)
+                        .foregroundColor(PixelTheme.textPrimary)
                     TextField("KEY", text: $key)
                         .font(PixelTheme.pixelFont(size: 13))
                         .foregroundColor(PixelTheme.textPrimary)
+                        .textFieldStyle(.plain)
                         .padding(8)
-                        .background(PixelTheme.background)
-                        .pixelBorder()
+                        .background(PixelTheme.cardBackground)
+                        .pixelBorder(color: PixelTheme.borderHighlight)
                 }
                 
                 // Value field
                 VStack(alignment: .leading, spacing: 4) {
                     Text("> VALUE *")
                         .font(PixelTheme.pixelFont(size: 11))
-                        .foregroundColor(PixelTheme.textSecondary)
+                        .foregroundColor(PixelTheme.textPrimary)
                     SecureField("VALUE", text: $value)
                         .font(PixelTheme.pixelFont(size: 13))
                         .foregroundColor(PixelTheme.textPrimary)
+                        .textFieldStyle(.plain)
                         .padding(8)
-                        .background(PixelTheme.background)
-                        .pixelBorder()
+                        .background(PixelTheme.cardBackground)
+                        .pixelBorder(color: PixelTheme.borderHighlight)
                 }
                 
                 // Description field
@@ -470,9 +484,10 @@ struct PixelEditKeyValueSheet: View {
                     TextField("DESCRIPTION", text: $description)
                         .font(PixelTheme.pixelFont(size: 13))
                         .foregroundColor(PixelTheme.textPrimary)
+                        .textFieldStyle(.plain)
                         .padding(8)
-                        .background(PixelTheme.background)
-                        .pixelBorder()
+                        .background(PixelTheme.cardBackground)
+                        .pixelBorder(color: PixelTheme.borderHighlight)
                 }
                 
                 // Tags field
@@ -483,9 +498,10 @@ struct PixelEditKeyValueSheet: View {
                     TextField("TAG1, TAG2", text: $tagsText)
                         .font(PixelTheme.pixelFont(size: 13))
                         .foregroundColor(PixelTheme.textPrimary)
+                        .textFieldStyle(.plain)
                         .padding(8)
-                        .background(PixelTheme.background)
-                        .pixelBorder()
+                        .background(PixelTheme.cardBackground)
+                        .pixelBorder(color: PixelTheme.borderHighlight)
                     
                     // Existing tags
                     if !kvStore.allTags.isEmpty {
@@ -493,14 +509,14 @@ struct PixelEditKeyValueSheet: View {
                             HStack(spacing: 4) {
                                 Text("EXISTING:")
                                     .font(PixelTheme.pixelFont(size: 10))
-                                    .foregroundColor(PixelTheme.textMuted)
+                                    .foregroundColor(PixelTheme.textSecondary)
                                 ForEach(kvStore.allTags, id: \.self) { tag in
                                     Button(action: {
                                         if !tags.contains(tag) {
                                             tagsText = tagsText.isEmpty ? tag : "\(tagsText), \(tag)"
                                         }
                                     }) {
-                                        PixelTag(text: tag.uppercased(), color: PixelTheme.textSecondary)
+                                        PixelTag(text: tag.uppercased(), color: PixelTheme.secondary)
                                     }
                                     .buttonStyle(.plain)
                                 }
@@ -510,14 +526,14 @@ struct PixelEditKeyValueSheet: View {
                 }
             }
             
-            PixelDivider()
+            PixelDivider(color: PixelTheme.borderHighlight)
             
             // Buttons
             HStack {
                 Button(action: { isPresented = false }) {
                     Text("[ CANCEL ]")
                         .font(PixelTheme.pixelFontBold(size: 12))
-                        .foregroundColor(PixelTheme.textSecondary)
+                        .foregroundColor(PixelTheme.textPrimary)
                 }
                 .buttonStyle(PixelButtonStyle(backgroundColor: PixelTheme.cardBackground))
                 .keyboardShortcut(.escape)

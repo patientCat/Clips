@@ -31,17 +31,21 @@ struct MenuBarView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Pixel-style header
+            // Pixel-style header with glow effect
             HStack {
                 Text("[ L-TOOLS ]")
                     .font(PixelTheme.pixelFontBold(size: 16))
                     .foregroundColor(PixelTheme.primary)
+                    .shadow(color: PixelTheme.primary.opacity(0.5), radius: 4, x: 0, y: 0)
                 Spacer()
-                // Decorative pixels
+                // Decorative pixels with glow
                 HStack(spacing: 2) {
                     Rectangle().fill(PixelTheme.danger).frame(width: 8, height: 8)
+                        .shadow(color: PixelTheme.danger.opacity(0.6), radius: 3)
                     Rectangle().fill(PixelTheme.accent).frame(width: 8, height: 8)
+                        .shadow(color: PixelTheme.accent.opacity(0.6), radius: 3)
                     Rectangle().fill(PixelTheme.primary).frame(width: 8, height: 8)
+                        .shadow(color: PixelTheme.primary.opacity(0.6), radius: 3)
                 }
             }
             .padding(.horizontal, 12)
@@ -313,7 +317,7 @@ struct PixelTabButton: View {
                 Text(title)
                     .font(PixelTheme.pixelFont(size: 11))
             }
-            .foregroundColor(isSelected ? PixelTheme.background : PixelTheme.textSecondary)
+            .foregroundColor(isSelected ? PixelTheme.background : PixelTheme.textPrimary)
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
             .background(
@@ -322,8 +326,9 @@ struct PixelTabButton: View {
             )
             .overlay(
                 Rectangle()
-                    .stroke(isSelected ? PixelTheme.primary : PixelTheme.border, lineWidth: 2)
+                    .stroke(isSelected ? PixelTheme.primary : PixelTheme.borderHighlight, lineWidth: 2)
             )
+            .shadow(color: isSelected ? PixelTheme.primary.opacity(0.4) : .clear, radius: 4, x: 0, y: 0)
         }
         .buttonStyle(.plain)
     }
@@ -350,10 +355,11 @@ struct PixelClipboardRow: View {
     var body: some View {
         Button(action: onCopy) {
             HStack(spacing: 8) {
-                // Type indicator
+                // Type indicator with glow
                 Text(item.contentType == .image ? "[IMG]" : "[TXT]")
                     .font(PixelTheme.pixelFont(size: 10))
                     .foregroundColor(item.contentType == .image ? PixelTheme.secondary : PixelTheme.accent)
+                    .shadow(color: (item.contentType == .image ? PixelTheme.secondary : PixelTheme.accent).opacity(0.5), radius: 2)
                 
                 // Content
                 if item.contentType == .image {
@@ -362,7 +368,7 @@ struct PixelClipboardRow: View {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 24, height: 24)
-                            .pixelBorder(color: PixelTheme.border, width: 1)
+                            .pixelBorder(color: PixelTheme.borderHighlight, width: 1)
                     }
                     Text(item.content)
                         .font(PixelTheme.pixelFont(size: 12))
@@ -385,7 +391,8 @@ struct PixelClipboardRow: View {
                         }) {
                             Image(systemName: item.isFavorite ? "star.fill" : "star")
                                 .font(.system(size: 12, weight: .bold))
-                                .foregroundColor(item.isFavorite ? PixelTheme.accent : PixelTheme.textMuted)
+                                .foregroundColor(item.isFavorite ? PixelTheme.accent : PixelTheme.textSecondary)
+                                .shadow(color: item.isFavorite ? PixelTheme.accent.opacity(0.6) : .clear, radius: 3)
                         }
                         .buttonStyle(.plain)
                         .onHover { hovering in
@@ -401,13 +408,14 @@ struct PixelClipboardRow: View {
                         Text("[COPY]")
                             .font(PixelTheme.pixelFont(size: 10))
                             .foregroundColor(PixelTheme.primary)
+                            .shadow(color: PixelTheme.primary.opacity(0.5), radius: 2)
                     }
                 }
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 12)
-            .background(isHovering ? PixelTheme.primary.opacity(0.15) : PixelTheme.cardBackground)
-            .pixelBorder(color: isHovering ? PixelTheme.primary : PixelTheme.border, width: 1)
+            .background(isHovering ? PixelTheme.primary.opacity(0.2) : PixelTheme.cardBackground)
+            .pixelBorder(color: isHovering ? PixelTheme.primary : PixelTheme.borderHighlight, width: 1)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -441,18 +449,19 @@ struct PixelImagePreview: View {
             Text("[ IMAGE PREVIEW ]")
                 .font(PixelTheme.pixelFontBold(size: 12))
                 .foregroundColor(PixelTheme.primary)
+                .shadow(color: PixelTheme.primary.opacity(0.5), radius: 3)
             
             if let image = item.image {
                 Image(nsImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(maxWidth: 280, maxHeight: 280)
-                    .pixelBorder()
+                    .pixelBorder(color: PixelTheme.borderHighlight)
             }
             
             Text(item.content)
                 .font(PixelTheme.pixelFont(size: 11))
-                .foregroundColor(PixelTheme.textSecondary)
+                .foregroundColor(PixelTheme.textPrimary)
         }
         .padding(12)
         .background(PixelTheme.background)

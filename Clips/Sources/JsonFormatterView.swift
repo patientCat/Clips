@@ -18,19 +18,21 @@ struct JsonFormatterView: View {
                 Text("> JSON_FORMATTER")
                     .font(PixelTheme.pixelFontBold(size: 12))
                     .foregroundColor(PixelTheme.primary)
+                    .shadow(color: PixelTheme.primary.opacity(0.5), radius: 3)
                 Spacer()
                 
                 // Indent size selector
                 HStack(spacing: 4) {
                     Text("INDENT:")
                         .font(PixelTheme.pixelFont(size: 10))
-                        .foregroundColor(PixelTheme.textSecondary)
+                        .foregroundColor(PixelTheme.textPrimary)
                     
                     ForEach([2, 4], id: \.self) { size in
                         Button(action: { indentSize = size }) {
                             Text("[\(size)]")
                                 .font(PixelTheme.pixelFont(size: 10))
-                                .foregroundColor(indentSize == size ? PixelTheme.primary : PixelTheme.textMuted)
+                                .foregroundColor(indentSize == size ? PixelTheme.primary : PixelTheme.textSecondary)
+                                .shadow(color: indentSize == size ? PixelTheme.primary.opacity(0.4) : .clear, radius: 2)
                         }
                         .buttonStyle(.plain)
                     }
@@ -40,7 +42,8 @@ struct JsonFormatterView: View {
                 Button(action: { isCompact.toggle(); formatJson() }) {
                     Text(isCompact ? "[COMPACT:ON]" : "[COMPACT:OFF]")
                         .font(PixelTheme.pixelFont(size: 10))
-                        .foregroundColor(isCompact ? PixelTheme.accent : PixelTheme.textMuted)
+                        .foregroundColor(isCompact ? PixelTheme.accent : PixelTheme.textSecondary)
+                        .shadow(color: isCompact ? PixelTheme.accent.opacity(0.4) : .clear, radius: 2)
                 }
                 .buttonStyle(.plain)
             }
@@ -55,12 +58,14 @@ struct JsonFormatterView: View {
                     Text("> INPUT_JSON")
                         .font(PixelTheme.pixelFont(size: 11))
                         .foregroundColor(PixelTheme.accent)
+                        .shadow(color: PixelTheme.accent.opacity(0.4), radius: 2)
                     Spacer()
                     
                     Button(action: pasteFromClipboard) {
                         Text("[PASTE]")
                             .font(PixelTheme.pixelFont(size: 10))
                             .foregroundColor(PixelTheme.secondary)
+                            .shadow(color: PixelTheme.secondary.opacity(0.4), radius: 2)
                     }
                     .buttonStyle(.plain)
                     
@@ -68,6 +73,7 @@ struct JsonFormatterView: View {
                         Text("[CLR]")
                             .font(PixelTheme.pixelFont(size: 10))
                             .foregroundColor(PixelTheme.danger)
+                            .shadow(color: PixelTheme.danger.opacity(0.4), radius: 2)
                     }
                     .buttonStyle(.plain)
                 }
@@ -94,7 +100,7 @@ struct JsonFormatterView: View {
                 }
                 .frame(height: 120)
                 .background(PixelTheme.background)
-                .pixelBorder(color: PixelTheme.border, width: 2)
+                .pixelBorder(color: PixelTheme.borderHighlight, width: 2)
                 .padding(.horizontal, 8)
                 .onTapGesture {
                     isInputFocused = true
@@ -115,6 +121,7 @@ struct JsonFormatterView: View {
                     .padding(.vertical, 8)
                     .background(PixelTheme.primary)
                     .pixelBorder(color: PixelTheme.primary, width: 2)
+                    .shadow(color: PixelTheme.primary.opacity(0.4), radius: 4)
                 }
                 .buttonStyle(.plain)
                 
@@ -124,13 +131,14 @@ struct JsonFormatterView: View {
                     Text("⚠ \(error)")
                         .font(PixelTheme.pixelFont(size: 10))
                         .foregroundColor(PixelTheme.danger)
+                        .shadow(color: PixelTheme.danger.opacity(0.4), radius: 2)
                         .lineLimit(1)
                 }
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
             
-            PixelDivider()
+            PixelDivider(color: PixelTheme.borderHighlight)
             
             // Output area
             VStack(alignment: .leading, spacing: 4) {
@@ -138,11 +146,12 @@ struct JsonFormatterView: View {
                     Text("> OUTPUT_JSON")
                         .font(PixelTheme.pixelFont(size: 11))
                         .foregroundColor(PixelTheme.primary)
+                        .shadow(color: PixelTheme.primary.opacity(0.4), radius: 2)
                     
                     if !outputText.isEmpty {
                         Text("[\(outputText.count) CHARS]")
                             .font(PixelTheme.pixelFont(size: 10))
-                            .foregroundColor(PixelTheme.textMuted)
+                            .foregroundColor(PixelTheme.textSecondary)
                     }
                     
                     Spacer()
@@ -152,6 +161,7 @@ struct JsonFormatterView: View {
                             Text("[COPY]")
                                 .font(PixelTheme.pixelFont(size: 10))
                                 .foregroundColor(PixelTheme.primary)
+                                .shadow(color: PixelTheme.primary.opacity(0.4), radius: 2)
                         }
                         .buttonStyle(.plain)
                     }
@@ -290,6 +300,6 @@ struct PixelTextEditor: View {
             }
         }
         .background(PixelTheme.background)
-        .pixelBorder(color: PixelTheme.border, width: 2)
+        .pixelBorder(color: PixelTheme.borderHighlight, width: 2)
     }
 }

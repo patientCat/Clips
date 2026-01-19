@@ -10,6 +10,7 @@ struct RestReminderView: View {
                 Text("> WORK_TIMER")
                     .font(PixelTheme.pixelFontBold(size: 12))
                     .foregroundColor(PixelTheme.primary)
+                    .shadow(color: PixelTheme.primary.opacity(0.5), radius: 3)
                 Spacer()
                 
                 // Status indicator
@@ -17,15 +18,17 @@ struct RestReminderView: View {
                     Rectangle()
                         .fill(statusColor)
                         .frame(width: 8, height: 8)
+                        .shadow(color: statusColor.opacity(0.6), radius: 3)
                     Text(store.statusText.uppercased())
                         .font(PixelTheme.pixelFont(size: 11))
                         .foregroundColor(statusColor)
+                        .shadow(color: statusColor.opacity(0.4), radius: 2)
                 }
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
             
-            PixelDivider()
+            PixelDivider(color: PixelTheme.primary)
             
             ScrollView {
                 VStack(spacing: 16) {
@@ -62,6 +65,7 @@ struct RestReminderView: View {
                 Text("╔════════════════════════╗")
                     .font(PixelTheme.pixelFont(size: 12))
                     .foregroundColor(store.isRestTime ? PixelTheme.primary : PixelTheme.secondary)
+                    .shadow(color: (store.isRestTime ? PixelTheme.primary : PixelTheme.secondary).opacity(0.4), radius: 3)
                 
                 Text("║                        ║")
                     .font(PixelTheme.pixelFont(size: 12))
@@ -75,6 +79,7 @@ struct RestReminderView: View {
                     Text(store.formattedRemainingTime)
                         .font(PixelTheme.pixelFontBold(size: 36))
                         .foregroundColor(store.isRestTime ? PixelTheme.primary : PixelTheme.accent)
+                        .shadow(color: (store.isRestTime ? PixelTheme.primary : PixelTheme.accent).opacity(0.6), radius: 6)
                     Spacer()
                     Text("║")
                         .font(PixelTheme.pixelFont(size: 12))
@@ -89,12 +94,14 @@ struct RestReminderView: View {
                 Text("╚════════════════════════╝")
                     .font(PixelTheme.pixelFont(size: 12))
                     .foregroundColor(store.isRestTime ? PixelTheme.primary : PixelTheme.secondary)
+                    .shadow(color: (store.isRestTime ? PixelTheme.primary : PixelTheme.secondary).opacity(0.4), radius: 3)
             }
             
             // Mode label
             Text(store.isRestTime ? "[ REST MODE ]" : "[ WORK MODE ]")
                 .font(PixelTheme.pixelFontBold(size: 14))
                 .foregroundColor(store.isRestTime ? PixelTheme.primary : PixelTheme.secondary)
+                .shadow(color: (store.isRestTime ? PixelTheme.primary : PixelTheme.secondary).opacity(0.5), radius: 4)
             
             // Progress bar
             VStack(spacing: 4) {
@@ -107,7 +114,7 @@ struct RestReminderView: View {
                 
                 Text("\(Int(timerProgress * 100))% COMPLETE")
                     .font(PixelTheme.pixelFont(size: 10))
-                    .foregroundColor(PixelTheme.textMuted)
+                    .foregroundColor(PixelTheme.textSecondary)
             }
             
             // Status message
@@ -116,7 +123,7 @@ struct RestReminderView: View {
                     Text(">")
                         .foregroundColor(PixelTheme.primary)
                     Text(store.isRestTime ? "TAKE A BREAK..." : "FOCUS MODE ACTIVE")
-                        .foregroundColor(PixelTheme.textSecondary)
+                        .foregroundColor(PixelTheme.textPrimary)
                 }
                 .font(PixelTheme.pixelFont(size: 11))
             }
@@ -144,35 +151,38 @@ struct RestReminderView: View {
             Text("> SETTINGS")
                 .font(PixelTheme.pixelFontBold(size: 12))
                 .foregroundColor(PixelTheme.primary)
+                .shadow(color: PixelTheme.primary.opacity(0.4), radius: 2)
             
             // Enable toggle
             HStack {
                 Text("ENABLED:")
                     .font(PixelTheme.pixelFont(size: 12))
-                    .foregroundColor(PixelTheme.textSecondary)
+                    .foregroundColor(PixelTheme.textPrimary)
                 Spacer()
                 Button(action: { store.isEnabled.toggle() }) {
                     Text(store.isEnabled ? "[ ON ]" : "[ OFF ]")
                         .font(PixelTheme.pixelFontBold(size: 12))
                         .foregroundColor(store.isEnabled ? PixelTheme.primary : PixelTheme.danger)
+                        .shadow(color: (store.isEnabled ? PixelTheme.primary : PixelTheme.danger).opacity(0.4), radius: 2)
                 }
                 .buttonStyle(.plain)
             }
             .padding(8)
             .background(PixelTheme.cardBackground)
-            .pixelBorder()
+            .pixelBorder(color: PixelTheme.borderHighlight)
             
             // Work duration
             HStack {
                 Text("WORK_TIME:")
                     .font(PixelTheme.pixelFont(size: 12))
-                    .foregroundColor(PixelTheme.textSecondary)
+                    .foregroundColor(PixelTheme.textPrimary)
                 Spacer()
                 HStack(spacing: 4) {
                     Button(action: { decrementWork() }) {
                         Text("[-]")
                             .font(PixelTheme.pixelFontBold(size: 12))
                             .foregroundColor(PixelTheme.secondary)
+                            .shadow(color: PixelTheme.secondary.opacity(0.4), radius: 2)
                     }
                     .buttonStyle(.plain)
                     .disabled(!store.isEnabled)
@@ -180,12 +190,14 @@ struct RestReminderView: View {
                     Text("\(store.workDurationMinutes) MIN")
                         .font(PixelTheme.pixelFontBold(size: 12))
                         .foregroundColor(PixelTheme.accent)
+                        .shadow(color: PixelTheme.accent.opacity(0.4), radius: 2)
                         .frame(width: 70)
                     
                     Button(action: { incrementWork() }) {
                         Text("[+]")
                             .font(PixelTheme.pixelFontBold(size: 12))
                             .foregroundColor(PixelTheme.secondary)
+                            .shadow(color: PixelTheme.secondary.opacity(0.4), radius: 2)
                     }
                     .buttonStyle(.plain)
                     .disabled(!store.isEnabled)
@@ -193,20 +205,21 @@ struct RestReminderView: View {
             }
             .padding(8)
             .background(PixelTheme.cardBackground)
-            .pixelBorder()
+            .pixelBorder(color: PixelTheme.borderHighlight)
             .opacity(store.isEnabled ? 1 : 0.5)
             
             // Rest duration
             HStack {
                 Text("REST_TIME:")
                     .font(PixelTheme.pixelFont(size: 12))
-                    .foregroundColor(PixelTheme.textSecondary)
+                    .foregroundColor(PixelTheme.textPrimary)
                 Spacer()
                 HStack(spacing: 4) {
                     Button(action: { decrementRest() }) {
                         Text("[-]")
                             .font(PixelTheme.pixelFontBold(size: 12))
                             .foregroundColor(PixelTheme.primary)
+                            .shadow(color: PixelTheme.primary.opacity(0.4), radius: 2)
                     }
                     .buttonStyle(.plain)
                     .disabled(!store.isEnabled)
@@ -214,12 +227,14 @@ struct RestReminderView: View {
                     Text("\(store.restDurationMinutes) MIN")
                         .font(PixelTheme.pixelFontBold(size: 12))
                         .foregroundColor(PixelTheme.primary)
+                        .shadow(color: PixelTheme.primary.opacity(0.4), radius: 2)
                         .frame(width: 70)
                     
                     Button(action: { incrementRest() }) {
                         Text("[+]")
                             .font(PixelTheme.pixelFontBold(size: 12))
                             .foregroundColor(PixelTheme.primary)
+                            .shadow(color: PixelTheme.primary.opacity(0.4), radius: 2)
                     }
                     .buttonStyle(.plain)
                     .disabled(!store.isEnabled)
@@ -227,7 +242,7 @@ struct RestReminderView: View {
             }
             .padding(8)
             .background(PixelTheme.cardBackground)
-            .pixelBorder()
+            .pixelBorder(color: PixelTheme.borderHighlight)
             .opacity(store.isEnabled ? 1 : 0.5)
         }
     }
@@ -266,6 +281,7 @@ struct RestReminderView: View {
             Text("> CONTROLS")
                 .font(PixelTheme.pixelFontBold(size: 12))
                 .foregroundColor(PixelTheme.primary)
+                .shadow(color: PixelTheme.primary.opacity(0.4), radius: 2)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             HStack(spacing: 12) {
@@ -275,6 +291,7 @@ struct RestReminderView: View {
                         Text("[ PAUSE ]")
                             .font(PixelTheme.pixelFontBold(size: 12))
                             .foregroundColor(PixelTheme.warning)
+                            .shadow(color: PixelTheme.warning.opacity(0.4), radius: 2)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 10)
                     }
@@ -285,6 +302,7 @@ struct RestReminderView: View {
                         Text("[ STOP ]")
                             .font(PixelTheme.pixelFontBold(size: 12))
                             .foregroundColor(PixelTheme.danger)
+                            .shadow(color: PixelTheme.danger.opacity(0.4), radius: 2)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 10)
                     }
@@ -304,11 +322,11 @@ struct RestReminderView: View {
                     Button(action: { store.stopTimer() }) {
                         Text("[ RESET ]")
                             .font(PixelTheme.pixelFontBold(size: 12))
-                            .foregroundColor(PixelTheme.textSecondary)
+                            .foregroundColor(PixelTheme.textPrimary)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 10)
                     }
-                    .buttonStyle(PixelButtonStyle(backgroundColor: PixelTheme.cardBackground, foregroundColor: PixelTheme.textSecondary))
+                    .buttonStyle(PixelButtonStyle(backgroundColor: PixelTheme.cardBackground, foregroundColor: PixelTheme.textPrimary))
                 } else {
                     // Start button
                     Button(action: { store.startTimer() }) {
@@ -331,7 +349,7 @@ struct RestReminderView: View {
                 Button(action: { store.skipRest() }) {
                     Text(">> SKIP REST")
                         .font(PixelTheme.pixelFont(size: 11))
-                        .foregroundColor(PixelTheme.textMuted)
+                        .foregroundColor(PixelTheme.textSecondary)
                 }
                 .buttonStyle(.plain)
             }

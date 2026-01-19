@@ -8,6 +8,11 @@ class HistoryStore: ObservableObject {
     private let storageKey = "ClipsHistory"
     private var cancellables = Set<AnyCancellable>()
     
+    // 收藏列表
+    var favorites: [ClipboardItem] {
+        history.filter { $0.isFavorite }
+    }
+    
     init(clipboardService: ClipboardService) {
         load()
         print("📋 HistoryStore 初始化，已加载 \(history.count) 条历史记录")
@@ -96,6 +101,22 @@ class HistoryStore: ObservableObject {
     
     func clear() {
         history.removeAll()
+        save()
+    }
+    
+    // 切换收藏状态
+    func toggleFavorite(for item: ClipboardItem) {
+        if let index = history.firstIndex(where: { $0.id == item.id }) {
+            history[index].isFavorite.toggle()
+            save()
+        }
+    }
+    
+    // 清除所有收藏
+    func clearFavorites() {
+        for index in history.indices {
+            history[index].isFavorite = false
+        }
         save()
     }
 }

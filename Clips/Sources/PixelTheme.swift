@@ -1,25 +1,28 @@
 import SwiftUI
 import AppKit
 
-// MARK: - Pixel Art Theme
+// MARK: - Pixel Art Theme (High Contrast Bright Style)
 struct PixelTheme {
-    // Pixel-style colors (retro game palette)
-    static let background = Color(red: 0.1, green: 0.1, blue: 0.15)
-    static let cardBackground = Color(red: 0.15, green: 0.15, blue: 0.2)
-    static let headerBackground = Color(red: 0.12, green: 0.12, blue: 0.18)
+    // Deep dark backgrounds for maximum contrast
+    static let background = Color(red: 0.05, green: 0.05, blue: 0.08)
+    static let cardBackground = Color(red: 0.08, green: 0.08, blue: 0.12)
+    static let headerBackground = Color(red: 0.06, green: 0.06, blue: 0.1)
     
-    static let primary = Color(red: 0.4, green: 0.8, blue: 0.4)      // Green (like old terminals)
-    static let secondary = Color(red: 0.3, green: 0.6, blue: 0.9)    // Blue
-    static let accent = Color(red: 1.0, green: 0.8, blue: 0.2)       // Yellow/Gold
-    static let danger = Color(red: 0.9, green: 0.3, blue: 0.3)       // Red
-    static let warning = Color(red: 1.0, green: 0.6, blue: 0.2)      // Orange
+    // Vibrant bright accent colors
+    static let primary = Color(red: 0.2, green: 1.0, blue: 0.4)       // Neon Green
+    static let secondary = Color(red: 0.3, green: 0.8, blue: 1.0)     // Cyan Blue
+    static let accent = Color(red: 1.0, green: 0.9, blue: 0.1)        // Bright Yellow
+    static let danger = Color(red: 1.0, green: 0.3, blue: 0.4)        // Bright Red
+    static let warning = Color(red: 1.0, green: 0.7, blue: 0.1)       // Bright Orange
     
-    static let textPrimary = Color(red: 0.9, green: 0.95, blue: 0.9)
-    static let textSecondary = Color(red: 0.6, green: 0.65, blue: 0.6)
-    static let textMuted = Color(red: 0.4, green: 0.45, blue: 0.4)
+    // High contrast bright text colors
+    static let textPrimary = Color(red: 1.0, green: 1.0, blue: 1.0)   // Pure White
+    static let textSecondary = Color(red: 0.85, green: 0.9, blue: 0.85) // Light Gray-Green
+    static let textMuted = Color(red: 0.6, green: 0.65, blue: 0.6)    // Medium Gray
     
-    static let border = Color(red: 0.3, green: 0.35, blue: 0.3)
-    static let borderHighlight = Color(red: 0.5, green: 0.55, blue: 0.5)
+    // Enhanced borders
+    static let border = Color(red: 0.25, green: 0.35, blue: 0.3)
+    static let borderHighlight = Color(red: 0.4, green: 0.6, blue: 0.45)
     
     // Pixel font - use monospaced for that retro feel
     static func pixelFont(size: CGFloat) -> Font {
@@ -73,23 +76,23 @@ struct PixelButtonStyle: ButtonStyle {
             .background(
                 ZStack {
                     Rectangle()
-                        .fill(configuration.isPressed ? backgroundColor.opacity(0.7) : backgroundColor)
+                        .fill(configuration.isPressed ? backgroundColor.opacity(0.8) : backgroundColor)
                     
-                    // Pixel border effect
+                    // Pixel border effect with glow
                     Rectangle()
-                        .stroke(PixelTheme.border, lineWidth: 2)
+                        .stroke(PixelTheme.borderHighlight, lineWidth: 2)
                     
                     // Highlight on top/left
                     if !configuration.isPressed {
                         VStack(spacing: 0) {
                             Rectangle()
-                                .fill(PixelTheme.borderHighlight)
+                                .fill(PixelTheme.primary.opacity(0.3))
                                 .frame(height: 2)
                             Spacer()
                         }
                         HStack(spacing: 0) {
                             Rectangle()
-                                .fill(PixelTheme.borderHighlight)
+                                .fill(PixelTheme.primary.opacity(0.3))
                                 .frame(width: 2)
                             Spacer()
                         }
@@ -100,13 +103,13 @@ struct PixelButtonStyle: ButtonStyle {
                         VStack(spacing: 0) {
                             Spacer()
                             Rectangle()
-                                .fill(Color.black.opacity(0.5))
+                                .fill(Color.black.opacity(0.7))
                                 .frame(height: 2)
                         }
                         HStack(spacing: 0) {
                             Spacer()
                             Rectangle()
-                                .fill(Color.black.opacity(0.5))
+                                .fill(Color.black.opacity(0.7))
                                 .frame(width: 2)
                         }
                     }
@@ -176,12 +179,12 @@ struct PixelTag: View {
     var body: some View {
         Text(text)
             .font(PixelTheme.pixelFont(size: 10))
-            .foregroundColor(isSelected ? PixelTheme.background : color)
+            .foregroundColor(isSelected ? PixelTheme.background : PixelTheme.textPrimary)
             .padding(.horizontal, 8)
             .padding(.vertical, 3)
             .background(
                 Rectangle()
-                    .fill(isSelected ? color : color.opacity(0.2))
+                    .fill(isSelected ? color : color.opacity(0.25))
             )
             .overlay(
                 Rectangle()
