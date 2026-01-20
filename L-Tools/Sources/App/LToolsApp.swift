@@ -4,7 +4,7 @@ import Carbon
 import UserNotifications
 
 @main
-enum ClipsAppMain {
+enum LToolsAppMain {
     static func main() {
         let app = NSApplication.shared
         let delegate = AppDelegate()

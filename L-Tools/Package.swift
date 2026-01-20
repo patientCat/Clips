@@ -3,13 +3,13 @@
 import PackageDescription
 
 let package = Package(
-    name: "Clips",
+    name: "L-Tools",
     platforms: [
         .macOS(.v12)
     ],
     targets: [
         .executableTarget(
-            name: "Clips",
+            name: "L-Tools",
             path: "Sources",
             sources: [
                 "App",
