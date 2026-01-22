@@ -12,7 +12,11 @@
 
 ## 安装和使用
 
-### 方法 1: 直接运行
+### 方法 1: 下载 DMG 安装（推荐）
+
+从 [GitHub Releases](https://github.com/patientCat/Clips/releases) 下载最新的 DMG 文件，双击安装即可使用。
+
+### 方法 2: 直接运行
 ```bash
 # 双击运行
 open Clips.app
