@@ -4,7 +4,7 @@ import Carbon
 import UserNotifications
 
 @main
-enum LToolsAppMain {
+enum ClipsAppMain {
     static func main() {
         let app = NSApplication.shared
         let delegate = AppDelegate()
@@ -140,13 +140,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         let appMenuItem = NSMenuItem()
         appMenuItem.submenu = appMenu
         
-        appMenu.addItem(NSMenuItem(title: "关于 L-Tools", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: ""))
+        appMenu.addItem(NSMenuItem(title: "关于 Clips", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: ""))
         appMenu.addItem(NSMenuItem.separator())
-        appMenu.addItem(NSMenuItem(title: "隐藏 L-Tools", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h"))
+        appMenu.addItem(NSMenuItem(title: "隐藏 Clips", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h"))
         appMenu.addItem(NSMenuItem(title: "隐藏其他", action: #selector(NSApplication.hideOtherApplications(_:)), keyEquivalent: ""))
         appMenu.addItem(NSMenuItem(title: "显示全部", action: #selector(NSApplication.unhideAllApplications(_:)), keyEquivalent: ""))
         appMenu.addItem(NSMenuItem.separator())
-        appMenu.addItem(NSMenuItem(title: "退出 L-Tools", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
+        appMenu.addItem(NSMenuItem(title: "退出 Clips", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         
         mainMenu.addItem(appMenuItem)
         
@@ -205,7 +205,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         )
         
         mainWindow?.contentViewController = hostingController
-        mainWindow?.title = "L-Tools"
+        mainWindow?.title = "Clips"
         mainWindow?.center()
         mainWindow?.makeKeyAndOrderFront(nil)
     }
@@ -220,7 +220,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
         
         // 使用系统图标
-        if let image = NSImage(systemSymbolName: "wrench.and.screwdriver", accessibilityDescription: "L-Tools") {
+        if let image = NSImage(systemSymbolName: "doc.on.clipboard", accessibilityDescription: "Clips") {
             image.isTemplate = true
             button.image = image
         } else {

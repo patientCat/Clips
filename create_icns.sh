@@ -7,7 +7,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SVG_FILE="$SCRIPT_DIR/icon.svg"
 PNG_FILE="$SCRIPT_DIR/icon.png"
 ICONSET_DIR="$SCRIPT_DIR/AppIcon.iconset"
-ICNS_FILE="$SCRIPT_DIR/L-Tools.app/Contents/Resources/AppIcon.icns"
+ICNS_FILE="$SCRIPT_DIR/Clips.app/Contents/Resources/AppIcon.icns"
 
 # 创建 iconset 目录
 rm -rf "$ICONSET_DIR"

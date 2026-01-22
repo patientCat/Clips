@@ -34,7 +34,7 @@ cat > ../Clips.app/Contents/Info.plist << 'EOF'
     <key>CFBundleExecutable</key>
     <string>ClipsApp</string>
     <key>CFBundleIdentifier</key>
-    <string>com.example.Clips</string>
+    <string>com.luke.Clips</string>
     <key>CFBundleName</key>
     <string>Clips</string>
     <key>CFBundleDisplayName</key>

@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleExecutable</key>
-    <string>L-Tools</string>
+    <string>Clips</string>
     <key>CFBundleIdentifier</key>
-    <string>com.example.L-Tools</string>
+    <string>com.luke.Clips</string>
     <key>CFBundleName</key>
-    <string>L-Tools</string>
+    <string>Clips</string>
     <key>CFBundleShortVersionString</key>
     <string>1.0</string>
     <key>CFBundleVersion</key>

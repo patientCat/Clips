@@ -1,12 +1,12 @@
-# L-Tools macOS App Makefile
+# Clips macOS App Makefile
 
 # 编译器和标志
 SWIFTC = swiftc
 SWIFT_FLAGS = -O -framework AppKit -framework Carbon -framework UserNotifications
 
 # 目录
-SRC_DIR = L-Tools/Sources
-APP_BUNDLE = L-Tools.app
+SRC_DIR = Clips/Sources
+APP_BUNDLE = Clips.app
 APP_CONTENTS = $(APP_BUNDLE)/Contents
 APP_MACOS = $(APP_CONTENTS)/MacOS
 APP_RESOURCES = $(APP_CONTENTS)/Resources
@@ -22,10 +22,10 @@ SOURCES = $(SRC_DIR)/Models/Models.swift \
           $(SRC_DIR)/Views/JsonFormatterView.swift \
           $(SRC_DIR)/Views/RestReminderView.swift \
           $(SRC_DIR)/Views/MenuBarView.swift \
-          $(SRC_DIR)/App/LToolsApp.swift
+          $(SRC_DIR)/App/ClipsApp.swift
 
 # 输出
-EXECUTABLE = LToolsApp
+EXECUTABLE = ClipsApp
 OUTPUT = $(APP_MACOS)/$(EXECUTABLE)
 
 # 图标
@@ -56,10 +56,10 @@ bundle: $(EXECUTABLE)
 	@echo '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' >> $(APP_CONTENTS)/Info.plist
 	@echo '<plist version="1.0">' >> $(APP_CONTENTS)/Info.plist
 	@echo '<dict>' >> $(APP_CONTENTS)/Info.plist
-	@echo '    <key>CFBundleExecutable</key><string>LToolsApp</string>' >> $(APP_CONTENTS)/Info.plist
-	@echo '    <key>CFBundleIdentifier</key><string>com.luke.LTools</string>' >> $(APP_CONTENTS)/Info.plist
-	@echo '    <key>CFBundleName</key><string>L-Tools</string>' >> $(APP_CONTENTS)/Info.plist
-	@echo '    <key>CFBundleDisplayName</key><string>L-Tools</string>' >> $(APP_CONTENTS)/Info.plist
+	@echo '    <key>CFBundleExecutable</key><string>ClipsApp</string>' >> $(APP_CONTENTS)/Info.plist
+	@echo '    <key>CFBundleIdentifier</key><string>com.luke.Clips</string>' >> $(APP_CONTENTS)/Info.plist
+	@echo '    <key>CFBundleName</key><string>Clips</string>' >> $(APP_CONTENTS)/Info.plist
+	@echo '    <key>CFBundleDisplayName</key><string>Clips</string>' >> $(APP_CONTENTS)/Info.plist
 	@echo '    <key>CFBundleIconFile</key><string>AppIcon</string>' >> $(APP_CONTENTS)/Info.plist
 	@echo '    <key>CFBundleShortVersionString</key><string>1.0</string>' >> $(APP_CONTENTS)/Info.plist
 	@echo '    <key>CFBundleVersion</key><string>1</string>' >> $(APP_CONTENTS)/Info.plist
@@ -87,23 +87,23 @@ dist: bundle
 	@mkdir -p dist
 	@rm -rf dist/*
 	@cp -R $(APP_BUNDLE) dist/
-	@cd dist && hdiutil create -volname "L-Tools" -srcfolder $(APP_BUNDLE) -ov -format UDZO L-Tools.dmg
-	@echo "🎉 分发包创建完成: dist/L-Tools.dmg"
+	@cd dist && hdiutil create -volname "Clips" -srcfolder $(APP_BUNDLE) -ov -format UDZO Clips.dmg
+	@echo "🎉 分发包创建完成: dist/Clips.dmg"
 
 # 运行应用
 run: bundle
-	@echo "🚀 启动 L-Tools..."
+	@echo "🚀 启动 Clips..."
 	@open $(APP_BUNDLE)
 
 # 清理
 clean:
 	@echo "🧹 清理..."
-	@rm -rf $(APP_BUNDLE) $(EXECUTABLE) Clips.app ClipsApp dist
+	@rm -rf $(APP_BUNDLE) $(EXECUTABLE) L-Tools.app LToolsApp dist
 	@echo "✅ 清理完成"
 
 # 帮助
 help:
-	@echo "L-Tools Makefile 使用说明:"
+	@echo "Clips Makefile 使用说明:"
 	@echo "  make          - 编译并创建 App Bundle"
 	@echo "  make build    - 仅编译可执行文件"
 	@echo "  make bundle   - 创建完整的 App Bundle"
