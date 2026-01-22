@@ -320,7 +320,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         
         let window = NSWindow(
             contentRect: NSRect(x: windowX, y: windowY, width: windowWidth, height: windowHeight),
-            styleMask: [.titled, .closable, .fullSizeContentView],
+            styleMask: [.titled, .closable, .resizable, .fullSizeContentView],
             backing: .buffered,
             defer: false
         )
