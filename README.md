@@ -10,6 +10,10 @@
 - ⚡ 快速复制历史内容
 - 🎨 原生 macOS 界面设计
 
+## 应用外观
+
+![Clips 应用界面](/resources/clips_appearence1.png)
+
 ## 安装和使用
 
 ### 方法 1: 下载 DMG 安装（推荐）
