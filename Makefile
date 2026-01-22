@@ -81,14 +81,24 @@ icon:
 	@echo "🎨 生成应用图标..."
 	@./create_icns.sh
 
-# 创建分发包
+# 创建分发包（带安装引导的 DMG）
 dist: bundle
 	@echo "📦 创建分发包..."
 	@mkdir -p dist
 	@rm -rf dist/*
+	@# 创建临时目录用于 DMG 内容
+	@mkdir -p dist/dmg-temp
+	@cp -R $(APP_BUNDLE) dist/dmg-temp/
+	@# 创建指向 Applications 文件夹的符号链接
+	@ln -s /Applications dist/dmg-temp/Applications
+	@# 创建带安装引导的 DMG
+	@hdiutil create -volname "Clips" -srcfolder dist/dmg-temp -ov -format UDZO dist/Clips.dmg
+	@# 清理临时目录
+	@rm -rf dist/dmg-temp
+	@# 保留一份 App Bundle 在 dist 目录
 	@cp -R $(APP_BUNDLE) dist/
-	@cd dist && hdiutil create -volname "Clips" -srcfolder $(APP_BUNDLE) -ov -format UDZO Clips.dmg
 	@echo "🎉 分发包创建完成: dist/Clips.dmg"
+	@echo "💡 用户打开 DMG 后，将 Clips.app 拖到 Applications 即可安装"
 
 # 运行应用
 run: bundle

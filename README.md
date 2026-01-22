@@ -18,7 +18,11 @@
 
 ### 方法 1: 下载 DMG 安装（推荐）
 
-从 [GitHub Releases](https://github.com/patientCat/Clips/releases) 下载最新的 DMG 文件，双击安装即可使用。
+从 [GitHub Releases](https://github.com/patientCat/Clips/releases) 下载最新的 DMG 文件：
+
+1. 双击打开 DMG 文件
+2. 将 Clips.app 拖到 Applications 文件夹即可完成安装
+3. 在 Applications 中双击 Clips 启动应用
 
 如何安装
 ![步骤一](/resources/install_step1.png)
