@@ -2,8 +2,290 @@ import SwiftUI
 
 struct RestReminderView: View {
     @ObservedObject var store: RestReminderStore
+    @ObservedObject var themeManager = ThemeManager.shared
     
     var body: some View {
+        if themeManager.currentTheme == .glassmorphism {
+            glassBody
+        } else {
+            pixelBody
+        }
+    }
+    
+    // MARK: - Glass Body
+    private var glassBody: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Text("Work Timer")
+                    .font(GlassmorphismTheme.glassFontBold(size: 14))
+                    .foregroundColor(GlassmorphismTheme.textPrimary)
+                Spacer()
+                
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(glassStatusColor)
+                        .frame(width: 8, height: 8)
+                        .shadow(color: glassStatusColor.opacity(0.5), radius: 4)
+                    Text(store.statusText)
+                        .font(GlassmorphismTheme.glassFont(size: 12))
+                        .foregroundColor(glassStatusColor)
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Timer Display
+                    glassTimerDisplay
+                        .padding(.top, 12)
+                    
+                    // Settings
+                    glassSettingsSection
+                        .padding(.horizontal, 12)
+                    
+                    // Controls
+                    glassControlsSection
+                        .padding(.horizontal, 12)
+                        .padding(.bottom, 12)
+                }
+            }
+        }
+    }
+    
+    private var glassTimerDisplay: some View {
+        VStack(spacing: 16) {
+            // Timer circle
+            ZStack {
+                // Background circle
+                Circle()
+                    .stroke(Color.white.opacity(0.1), lineWidth: 8)
+                    .frame(width: 160, height: 160)
+                
+                // Progress circle
+                Circle()
+                    .trim(from: 0, to: timerProgress)
+                    .stroke(
+                        LinearGradient(
+                            colors: [
+                                store.isRestTime ? GlassmorphismTheme.primary : GlassmorphismTheme.secondary,
+                                store.isRestTime ? GlassmorphismTheme.accent : GlassmorphismTheme.primary
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        style: StrokeStyle(lineWidth: 8, lineCap: .round)
+                    )
+                    .frame(width: 160, height: 160)
+                    .rotationEffect(.degrees(-90))
+                    .animation(.easeInOut(duration: 0.3), value: timerProgress)
+                
+                // Glass inner circle
+                Circle()
+                    .fill(.ultraThinMaterial)
+                    .frame(width: 140, height: 140)
+                    .overlay(
+                        Circle()
+                            .strokeBorder(Color.white.opacity(0.2), lineWidth: 0.5)
+                    )
+                
+                // Time display
+                VStack(spacing: 4) {
+                    Text(store.formattedRemainingTime)
+                        .font(.system(size: 32, weight: .light, design: .rounded))
+                        .foregroundColor(GlassmorphismTheme.textPrimary)
+                    
+                    Text(store.isRestTime ? "Rest" : "Focus")
+                        .font(GlassmorphismTheme.glassFont(size: 12))
+                        .foregroundColor(store.isRestTime ? GlassmorphismTheme.primary : GlassmorphismTheme.secondary)
+                }
+            }
+            .shadow(color: (store.isRestTime ? GlassmorphismTheme.primary : GlassmorphismTheme.secondary).opacity(0.2), radius: 20)
+            
+            // Status message
+            if store.isEnabled && store.isRunning {
+                Text(store.isRestTime ? "Take a break..." : "Stay focused!")
+                    .font(GlassmorphismTheme.glassFont(size: 13))
+                    .foregroundColor(GlassmorphismTheme.textSecondary)
+            }
+        }
+    }
+    
+    private var glassSettingsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Settings")
+                .font(GlassmorphismTheme.glassFontBold(size: 13))
+                .foregroundColor(GlassmorphismTheme.textPrimary)
+            
+            // Enable toggle
+            glassSettingRow(title: "Enabled") {
+                Button(action: { store.isEnabled.toggle() }) {
+                    Text(store.isEnabled ? "On" : "Off")
+                        .font(GlassmorphismTheme.glassFont(size: 12))
+                        .foregroundColor(store.isEnabled ? .white : GlassmorphismTheme.textSecondary)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 6)
+                        .background(
+                            Capsule().fill(store.isEnabled ? GlassmorphismTheme.primary : Color.white.opacity(0.1))
+                        )
+                }
+                .buttonStyle(.plain)
+            }
+            
+            // Work duration
+            glassSettingRow(title: "Work Time") {
+                HStack(spacing: 8) {
+                    Button(action: { decrementWork() }) {
+                        Image(systemName: "minus")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(GlassmorphismTheme.textSecondary)
+                            .frame(width: 28, height: 28)
+                            .background(Circle().fill(.ultraThinMaterial))
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(!store.isEnabled)
+                    
+                    Text("\(store.workDurationMinutes) min")
+                        .font(GlassmorphismTheme.glassFontBold(size: 14))
+                        .foregroundColor(GlassmorphismTheme.secondary)
+                        .frame(width: 60)
+                    
+                    Button(action: { incrementWork() }) {
+                        Image(systemName: "plus")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(GlassmorphismTheme.textSecondary)
+                            .frame(width: 28, height: 28)
+                            .background(Circle().fill(.ultraThinMaterial))
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(!store.isEnabled)
+                }
+            }
+            .opacity(store.isEnabled ? 1 : 0.5)
+            
+            // Rest duration
+            glassSettingRow(title: "Rest Time") {
+                HStack(spacing: 8) {
+                    Button(action: { decrementRest() }) {
+                        Image(systemName: "minus")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(GlassmorphismTheme.textSecondary)
+                            .frame(width: 28, height: 28)
+                            .background(Circle().fill(.ultraThinMaterial))
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(!store.isEnabled)
+                    
+                    Text("\(store.restDurationMinutes) min")
+                        .font(GlassmorphismTheme.glassFontBold(size: 14))
+                        .foregroundColor(GlassmorphismTheme.primary)
+                        .frame(width: 60)
+                    
+                    Button(action: { incrementRest() }) {
+                        Image(systemName: "plus")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(GlassmorphismTheme.textSecondary)
+                            .frame(width: 28, height: 28)
+                            .background(Circle().fill(.ultraThinMaterial))
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(!store.isEnabled)
+                }
+            }
+            .opacity(store.isEnabled ? 1 : 0.5)
+        }
+    }
+    
+    private func glassSettingRow<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
+        HStack {
+            Text(title)
+                .font(GlassmorphismTheme.glassFont(size: 13))
+                .foregroundColor(GlassmorphismTheme.textPrimary)
+            Spacer()
+            content()
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(.ultraThinMaterial)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .strokeBorder(Color.white.opacity(0.15), lineWidth: 0.5)
+        )
+    }
+    
+    private var glassControlsSection: some View {
+        VStack(spacing: 12) {
+            HStack(spacing: 12) {
+                if store.isRunning {
+                    glassButton(title: "Pause", icon: "pause.fill", color: GlassmorphismTheme.warning, action: { store.pauseTimer() })
+                    glassButton(title: "Stop", icon: "stop.fill", color: GlassmorphismTheme.danger, action: { store.stopTimer() })
+                } else if store.remainingSeconds > 0 {
+                    glassButton(title: "Resume", icon: "play.fill", color: GlassmorphismTheme.primary, isPrimary: true, action: { store.resumeTimer() })
+                    glassButton(title: "Reset", icon: "arrow.counterclockwise", color: GlassmorphismTheme.textSecondary, action: { store.stopTimer() })
+                } else {
+                    glassButton(title: "Start", icon: "play.fill", color: GlassmorphismTheme.primary, isPrimary: true, isDisabled: !store.isEnabled, action: { store.startTimer() })
+                }
+            }
+            
+            if store.isRestTime {
+                Button(action: { store.skipRest() }) {
+                    Text("Skip Rest")
+                        .font(GlassmorphismTheme.glassFont(size: 12))
+                        .foregroundColor(GlassmorphismTheme.textMuted)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+    
+    private func glassButton(title: String, icon: String, color: Color, isPrimary: Bool = false, isDisabled: Bool = false, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 12, weight: .medium))
+                Text(title)
+                    .font(GlassmorphismTheme.glassFontBold(size: 13))
+            }
+            .foregroundColor(isPrimary ? .white : color)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(
+                Group {
+                    if isPrimary {
+                        RoundedRectangle(cornerRadius: 10).fill(color)
+                    } else {
+                        RoundedRectangle(cornerRadius: 10).fill(.ultraThinMaterial)
+                    }
+                }
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .strokeBorder(isPrimary ? Color.clear : color.opacity(0.3), lineWidth: 0.5)
+            )
+            .shadow(color: isPrimary ? color.opacity(0.3) : .clear, radius: 8)
+        }
+        .buttonStyle(.plain)
+        .disabled(isDisabled)
+        .opacity(isDisabled ? 0.5 : 1)
+    }
+    
+    private var glassStatusColor: Color {
+        if !store.isEnabled {
+            return GlassmorphismTheme.textMuted
+        } else if !store.isRunning {
+            return GlassmorphismTheme.warning
+        } else if store.isRestTime {
+            return GlassmorphismTheme.primary
+        } else {
+            return GlassmorphismTheme.secondary
+        }
+    }
+    
+    // MARK: - Pixel Body
+    private var pixelBody: some View {
         VStack(spacing: 0) {
             // Header
             HStack {

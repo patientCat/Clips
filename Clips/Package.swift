@@ -7,9 +7,13 @@ let package = Package(
     platforms: [
         .macOS(.v12)
     ],
+    dependencies: [
+        .package(url: "https://github.com/SwiftUIX/SwiftUIX.git", from: "0.1.9")
+    ],
     targets: [
         .executableTarget(
             name: "Clips",
+            dependencies: ["SwiftUIX"],
             path: "Sources",
             sources: [
                 "App",

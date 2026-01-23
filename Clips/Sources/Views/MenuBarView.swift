@@ -41,20 +41,29 @@ struct MenuBarView: View {
             headerView
             
             // Divider
-            Rectangle()
-                .fill(theme.primary)
-                .frame(height: themeManager.currentTheme == .pixel ? 2 : 1)
+            if themeManager.currentTheme != .glassmorphism {
+                Rectangle()
+                    .fill(theme.primary)
+                    .frame(height: themeManager.currentTheme == .pixel ? 2 : 1)
+            }
             
             // Tab bar
             tabBarView
             
-            Rectangle()
-                .fill(theme.border)
-                .frame(height: themeManager.currentTheme == .pixel ? 2 : 1)
+            if themeManager.currentTheme != .glassmorphism {
+                Rectangle()
+                    .fill(theme.border)
+                    .frame(height: themeManager.currentTheme == .pixel ? 2 : 1)
+            }
             
             // Content area
             ZStack {
-                theme.background
+                if themeManager.currentTheme == .glassmorphism {
+                    // Glassmorphism gradient background
+                    GlassGradientBackground()
+                } else {
+                    theme.background
+                }
                 
                 if selectedTab == .history {
                     historyView
@@ -71,14 +80,27 @@ struct MenuBarView: View {
                 }
             }
             
-            Rectangle()
-                .fill(theme.border)
-                .frame(height: themeManager.currentTheme == .pixel ? 2 : 1)
+            if themeManager.currentTheme != .glassmorphism {
+                Rectangle()
+                    .fill(theme.border)
+                    .frame(height: themeManager.currentTheme == .pixel ? 2 : 1)
+            }
             
             // Footer
             footerView
         }
-        .background(theme.background)
+        .background(
+            Group {
+                if themeManager.currentTheme == .glassmorphism {
+                    ZStack {
+                        GlassGradientBackground()
+                        Rectangle().fill(.ultraThinMaterial)
+                    }
+                } else {
+                    theme.background
+                }
+            }
+        )
         .frame(minWidth: 450, maxWidth: .infinity, minHeight: 550, maxHeight: .infinity)
         .sheet(isPresented: $showThemePicker) {
             ThemePickerView()
@@ -92,6 +114,10 @@ struct MenuBarView: View {
                 Text("$ l-tools")
                     .font(TerminalTheme.terminalFontBold(size: 16))
                     .foregroundColor(TerminalTheme.primary)
+            } else if themeManager.currentTheme == .glassmorphism {
+                Text("L-Tools")
+                    .font(GlassmorphismTheme.glassFontBold(size: 18))
+                    .foregroundColor(GlassmorphismTheme.textPrimary)
             } else {
                 Text("[ L-TOOLS ]")
                     .font(PixelTheme.pixelFontBold(size: 16))
@@ -106,16 +132,33 @@ struct MenuBarView: View {
                 HStack(spacing: 4) {
                     Image(systemName: "paintpalette")
                         .font(.system(size: 11, weight: .medium))
-                    Text(themeManager.currentTheme == .terminal ? "theme" : "THEME")
+                    Text(themeManager.currentTheme == .terminal ? "theme" : (themeManager.currentTheme == .glassmorphism ? "Theme" : "THEME"))
                         .font(theme.font(size: 10))
                 }
                 .foregroundColor(theme.textSecondary)
-                .padding(.horizontal, 6)
-                .padding(.vertical, 3)
-                .background(theme.cardBackground)
+                .padding(.horizontal, themeManager.currentTheme == .glassmorphism ? 10 : 6)
+                .padding(.vertical, themeManager.currentTheme == .glassmorphism ? 5 : 3)
+                .background(
+                    Group {
+                        if themeManager.currentTheme == .glassmorphism {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(.ultraThinMaterial)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .strokeBorder(Color.white.opacity(0.2), lineWidth: 0.5)
+                                )
+                        } else {
+                            theme.cardBackground
+                        }
+                    }
+                )
                 .overlay(
-                    RoundedRectangle(cornerRadius: themeManager.currentTheme == .terminal ? 4 : 0)
-                        .stroke(theme.border, lineWidth: 1)
+                    Group {
+                        if themeManager.currentTheme != .glassmorphism {
+                            RoundedRectangle(cornerRadius: themeManager.currentTheme == .terminal ? 4 : 0)
+                                .stroke(theme.border, lineWidth: 1)
+                        }
+                    }
                 )
             }
             .buttonStyle(.plain)
@@ -133,6 +176,15 @@ struct MenuBarView: View {
                     Rectangle().fill(PixelTheme.primary).frame(width: 8, height: 8)
                         .shadow(color: PixelTheme.primary.opacity(0.6), radius: 3)
                 }
+            } else if themeManager.currentTheme == .glassmorphism {
+                HStack(spacing: 4) {
+                    Circle().fill(GlassmorphismTheme.danger).frame(width: 10, height: 10)
+                        .shadow(color: GlassmorphismTheme.danger.opacity(0.4), radius: 4)
+                    Circle().fill(GlassmorphismTheme.warning).frame(width: 10, height: 10)
+                        .shadow(color: GlassmorphismTheme.warning.opacity(0.4), radius: 4)
+                    Circle().fill(GlassmorphismTheme.primary).frame(width: 10, height: 10)
+                        .shadow(color: GlassmorphismTheme.primary.opacity(0.4), radius: 4)
+                }
             } else {
                 HStack(spacing: 4) {
                     Circle().fill(TerminalTheme.danger).frame(width: 8, height: 8)
@@ -142,18 +194,37 @@ struct MenuBarView: View {
             }
         }
         .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(theme.headerBackground)
+        .padding(.vertical, themeManager.currentTheme == .glassmorphism ? 12 : 8)
+        .background(
+            Group {
+                if themeManager.currentTheme == .glassmorphism {
+                    ZStack {
+                        Rectangle().fill(.ultraThinMaterial)
+                        Rectangle().fill(Color.white.opacity(0.05))
+                    }
+                } else {
+                    theme.headerBackground
+                }
+            }
+        )
     }
     
     // MARK: - Tab Bar View
     private var tabBarView: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: themeManager.currentTheme == .glassmorphism ? 6 : 4) {
             ForEach(ClipsTab.allCases, id: \.self) { tab in
                 if themeManager.currentTheme == .terminal {
                     TerminalTabButton(
                         icon: tabIcon(for: tab),
                         title: tab.rawValue.lowercased(),
+                        isSelected: selectedTab == tab
+                    ) {
+                        selectedTab = tab
+                    }
+                } else if themeManager.currentTheme == .glassmorphism {
+                    GlassTabButton(
+                        icon: tabIcon(for: tab),
+                        title: tab.rawValue.capitalized,
                         isSelected: selectedTab == tab
                     ) {
                         selectedTab = tab
@@ -170,9 +241,17 @@ struct MenuBarView: View {
             }
             Spacer()
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 6)
-        .background(theme.headerBackground)
+        .padding(.horizontal, themeManager.currentTheme == .glassmorphism ? 12 : 8)
+        .padding(.vertical, themeManager.currentTheme == .glassmorphism ? 10 : 6)
+        .background(
+            Group {
+                if themeManager.currentTheme == .glassmorphism {
+                    Rectangle().fill(.ultraThinMaterial)
+                } else {
+                    theme.headerBackground
+                }
+            }
+        )
     }
     
     // MARK: - Footer View
@@ -183,6 +262,14 @@ struct MenuBarView: View {
                     .font(TerminalTheme.terminalFont(size: 11))
                     .foregroundColor(TerminalTheme.textMuted)
                 TerminalCursor(width: 6, height: 12)
+            } else if themeManager.currentTheme == .glassmorphism {
+                Circle()
+                    .fill(GlassmorphismTheme.primary)
+                    .frame(width: 6, height: 6)
+                    .shadow(color: GlassmorphismTheme.primary.opacity(0.5), radius: 4)
+                Text("Ready")
+                    .font(GlassmorphismTheme.glassFont(size: 12))
+                    .foregroundColor(GlassmorphismTheme.textMuted)
             } else {
                 Text("> READY_")
                     .font(PixelTheme.pixelFont(size: 11))
@@ -196,6 +283,14 @@ struct MenuBarView: View {
                     Text("exit")
                         .font(TerminalTheme.terminalFont(size: 11))
                         .foregroundColor(TerminalTheme.danger)
+                } else if themeManager.currentTheme == .glassmorphism {
+                    HStack(spacing: 4) {
+                        Image(systemName: "xmark.circle")
+                            .font(.system(size: 11, weight: .medium))
+                        Text("Quit")
+                            .font(GlassmorphismTheme.glassFont(size: 11))
+                    }
+                    .foregroundColor(GlassmorphismTheme.danger)
                 } else {
                     Text("[ QUIT ]")
                         .font(PixelTheme.pixelFont(size: 11))
@@ -208,8 +303,16 @@ struct MenuBarView: View {
             }
         }
         .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(theme.headerBackground)
+        .padding(.vertical, themeManager.currentTheme == .glassmorphism ? 10 : 8)
+        .background(
+            Group {
+                if themeManager.currentTheme == .glassmorphism {
+                    Rectangle().fill(.ultraThinMaterial)
+                } else {
+                    theme.headerBackground
+                }
+            }
+        )
     }
     
     // MARK: - Tab Icon
@@ -228,76 +331,97 @@ struct MenuBarView: View {
     private var historyView: some View {
         VStack(spacing: 0) {
             // Header
-            HStack {
-                if themeManager.currentTheme == .terminal {
-                    Text("$ history")
-                        .font(TerminalTheme.terminalFontBold(size: 12))
-                        .foregroundColor(TerminalTheme.primary)
-                    Text("--count=\(historyStore.history.count)")
-                        .font(TerminalTheme.terminalFont(size: 12))
-                        .foregroundColor(TerminalTheme.textSecondary)
-                } else {
-                    Text("> CLIPBOARD_HISTORY")
-                        .font(PixelTheme.pixelFontBold(size: 12))
-                        .foregroundColor(PixelTheme.primary)
-                    Text("[\(historyStore.history.count)]")
-                        .font(PixelTheme.pixelFont(size: 12))
-                        .foregroundColor(PixelTheme.accent)
-                }
-                Spacer()
-                Button(action: { historyStore.clear() }) {
+            if themeManager.currentTheme == .glassmorphism {
+                GlassSectionHeader(
+                    title: "Clipboard History",
+                    count: historyStore.history.count,
+                    actionTitle: "Clear",
+                    action: { historyStore.clear() }
+                )
+            } else {
+                HStack {
                     if themeManager.currentTheme == .terminal {
-                        Text("clear")
-                            .font(TerminalTheme.terminalFont(size: 11))
-                            .foregroundColor(TerminalTheme.danger)
+                        Text("$ history")
+                            .font(TerminalTheme.terminalFontBold(size: 12))
+                            .foregroundColor(TerminalTheme.primary)
+                        Text("--count=\(historyStore.history.count)")
+                            .font(TerminalTheme.terminalFont(size: 12))
+                            .foregroundColor(TerminalTheme.textSecondary)
                     } else {
-                        Text("[CLR]")
-                            .font(PixelTheme.pixelFont(size: 11))
-                            .foregroundColor(PixelTheme.danger)
+                        Text("> CLIPBOARD_HISTORY")
+                            .font(PixelTheme.pixelFontBold(size: 12))
+                            .foregroundColor(PixelTheme.primary)
+                        Text("[\(historyStore.history.count)]")
+                            .font(PixelTheme.pixelFont(size: 12))
+                            .foregroundColor(PixelTheme.accent)
                     }
-                }
-                .buttonStyle(.plain)
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            
-            // Search bar
-            HStack(spacing: 8) {
-                Text(themeManager.currentTheme == .terminal ? "$" : ">")
-                    .font(theme.fontBold(size: 13))
-                    .foregroundColor(theme.primary)
-                TextField(themeManager.currentTheme == .terminal ? "search --query" : "SEARCH...", text: $searchText)
-                    .font(theme.font(size: 13))
-                    .foregroundColor(theme.textPrimary)
-                    .textFieldStyle(.plain)
-                if !searchText.isEmpty {
-                    Button(action: { searchText = "" }) {
-                        Text(themeManager.currentTheme == .terminal ? "×" : "[X]")
-                            .font(theme.font(size: 11))
-                            .foregroundColor(theme.danger)
+                    Spacer()
+                    Button(action: { historyStore.clear() }) {
+                        if themeManager.currentTheme == .terminal {
+                            Text("clear")
+                                .font(TerminalTheme.terminalFont(size: 11))
+                                .foregroundColor(TerminalTheme.danger)
+                        } else {
+                            Text("[CLR]")
+                                .font(PixelTheme.pixelFont(size: 11))
+                                .foregroundColor(PixelTheme.danger)
+                        }
                     }
                     .buttonStyle(.plain)
                 }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(theme.cardBackground)
-            .overlay(
-                RoundedRectangle(cornerRadius: themeManager.currentTheme == .terminal ? 4 : 0)
-                    .stroke(theme.border, lineWidth: themeManager.currentTheme == .terminal ? 1 : 2)
-            )
-            .padding(.horizontal, 8)
             
-            Rectangle()
-                .fill(theme.border)
-                .frame(height: themeManager.currentTheme == .terminal ? 1 : 2)
-                .padding(.vertical, 4)
+            // Search bar
+            if themeManager.currentTheme == .glassmorphism {
+                GlassSearchBar(text: $searchText, placeholder: "Search clips...")
+                    .padding(.horizontal, 10)
+                    .padding(.bottom, 8)
+            } else {
+                HStack(spacing: 8) {
+                    Text(themeManager.currentTheme == .terminal ? "$" : ">")
+                        .font(theme.fontBold(size: 13))
+                        .foregroundColor(theme.primary)
+                    TextField(themeManager.currentTheme == .terminal ? "search --query" : "SEARCH...", text: $searchText)
+                        .font(theme.font(size: 13))
+                        .foregroundColor(theme.textPrimary)
+                        .textFieldStyle(.plain)
+                    if !searchText.isEmpty {
+                        Button(action: { searchText = "" }) {
+                            Text(themeManager.currentTheme == .terminal ? "×" : "[X]")
+                                .font(theme.font(size: 11))
+                                .foregroundColor(theme.danger)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(theme.cardBackground)
+                .overlay(
+                    RoundedRectangle(cornerRadius: themeManager.currentTheme == .terminal ? 4 : 0)
+                        .stroke(theme.border, lineWidth: themeManager.currentTheme == .terminal ? 1 : 2)
+                )
+                .padding(.horizontal, 8)
+                
+                Rectangle()
+                    .fill(theme.border)
+                    .frame(height: themeManager.currentTheme == .terminal ? 1 : 2)
+                    .padding(.vertical, 4)
+            }
             
             if filteredHistory.isEmpty {
                 if themeManager.currentTheme == .terminal {
                     TerminalEmptyState(
                         message: searchText.isEmpty ? "No clipboard history" : "No matches found",
                         submessage: searchText.isEmpty ? "Copy something to get started" : nil
+                    )
+                } else if themeManager.currentTheme == .glassmorphism {
+                    GlassEmptyState(
+                        icon: searchText.isEmpty ? "doc.on.clipboard" : "magnifyingglass",
+                        message: searchText.isEmpty ? "No Clipboard History" : "No Results Found",
+                        submessage: searchText.isEmpty ? "Copy something to get started" : "Try a different search term"
                     )
                 } else {
                     VStack(spacing: 8) {
@@ -326,10 +450,25 @@ struct MenuBarView: View {
                 }
             } else {
                 ScrollView {
-                    LazyVStack(spacing: 4) {
+                    LazyVStack(spacing: themeManager.currentTheme == .glassmorphism ? 8 : 4) {
                         ForEach(filteredHistory) { item in
                             if themeManager.currentTheme == .terminal {
                                 TerminalClipboardRow(
+                                    item: item,
+                                    showFavoriteButton: true,
+                                    onCopy: {
+                                        if item.contentType == .text {
+                                            onCopy(item.content)
+                                        } else if let image = item.image {
+                                            onCopyImage?(image)
+                                        }
+                                    },
+                                    onToggleFavorite: {
+                                        historyStore.toggleFavorite(for: item)
+                                    }
+                                )
+                            } else if themeManager.currentTheme == .glassmorphism {
+                                GlassClipboardRow(
                                     item: item,
                                     showFavoriteButton: true,
                                     onCopy: {
@@ -361,8 +500,8 @@ struct MenuBarView: View {
                             }
                         }
                     }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
+                    .padding(.horizontal, themeManager.currentTheme == .glassmorphism ? 10 : 8)
+                    .padding(.vertical, themeManager.currentTheme == .glassmorphism ? 8 : 4)
                 }
             }
         }
@@ -372,48 +511,63 @@ struct MenuBarView: View {
     private var favoritesView: some View {
         VStack(spacing: 0) {
             // Header
-            HStack {
-                if themeManager.currentTheme == .terminal {
-                    Text("$ favorites")
-                        .font(TerminalTheme.terminalFontBold(size: 12))
-                        .foregroundColor(TerminalTheme.primary)
-                    Text("--count=\(historyStore.favorites.count)")
-                        .font(TerminalTheme.terminalFont(size: 12))
-                        .foregroundColor(TerminalTheme.textSecondary)
-                } else {
-                    Text("> FAVORITES")
-                        .font(PixelTheme.pixelFontBold(size: 12))
-                        .foregroundColor(PixelTheme.primary)
-                    Text("[\(historyStore.favorites.count)]")
-                        .font(PixelTheme.pixelFont(size: 12))
-                        .foregroundColor(PixelTheme.accent)
-                }
-                Spacer()
-                Button(action: { historyStore.clearFavorites() }) {
+            if themeManager.currentTheme == .glassmorphism {
+                GlassSectionHeader(
+                    title: "Favorites",
+                    count: historyStore.favorites.count,
+                    actionTitle: "Clear",
+                    action: { historyStore.clearFavorites() }
+                )
+            } else {
+                HStack {
                     if themeManager.currentTheme == .terminal {
-                        Text("clear")
-                            .font(TerminalTheme.terminalFont(size: 11))
-                            .foregroundColor(TerminalTheme.danger)
+                        Text("$ favorites")
+                            .font(TerminalTheme.terminalFontBold(size: 12))
+                            .foregroundColor(TerminalTheme.primary)
+                        Text("--count=\(historyStore.favorites.count)")
+                            .font(TerminalTheme.terminalFont(size: 12))
+                            .foregroundColor(TerminalTheme.textSecondary)
                     } else {
-                        Text("[CLR]")
-                            .font(PixelTheme.pixelFont(size: 11))
-                            .foregroundColor(PixelTheme.danger)
+                        Text("> FAVORITES")
+                            .font(PixelTheme.pixelFontBold(size: 12))
+                            .foregroundColor(PixelTheme.primary)
+                        Text("[\(historyStore.favorites.count)]")
+                            .font(PixelTheme.pixelFont(size: 12))
+                            .foregroundColor(PixelTheme.accent)
                     }
+                    Spacer()
+                    Button(action: { historyStore.clearFavorites() }) {
+                        if themeManager.currentTheme == .terminal {
+                            Text("clear")
+                                .font(TerminalTheme.terminalFont(size: 11))
+                                .foregroundColor(TerminalTheme.danger)
+                        } else {
+                            Text("[CLR]")
+                                .font(PixelTheme.pixelFont(size: 11))
+                                .foregroundColor(PixelTheme.danger)
+                        }
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                
+                Rectangle()
+                    .fill(theme.border)
+                    .frame(height: themeManager.currentTheme == .terminal ? 1 : 2)
+                    .padding(.vertical, 4)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            
-            Rectangle()
-                .fill(theme.border)
-                .frame(height: themeManager.currentTheme == .terminal ? 1 : 2)
-                .padding(.vertical, 4)
             
             if historyStore.favorites.isEmpty {
                 if themeManager.currentTheme == .terminal {
                     TerminalEmptyState(
                         message: "No favorites yet",
+                        submessage: "Star items to add them here"
+                    )
+                } else if themeManager.currentTheme == .glassmorphism {
+                    GlassEmptyState(
+                        icon: "star",
+                        message: "No Favorites Yet",
                         submessage: "Star items to add them here"
                     )
                 } else {
@@ -437,10 +591,25 @@ struct MenuBarView: View {
                 }
             } else {
                 ScrollView {
-                    LazyVStack(spacing: 4) {
+                    LazyVStack(spacing: themeManager.currentTheme == .glassmorphism ? 8 : 4) {
                         ForEach(historyStore.favorites) { item in
                             if themeManager.currentTheme == .terminal {
                                 TerminalClipboardRow(
+                                    item: item,
+                                    showFavoriteButton: true,
+                                    onCopy: {
+                                        if item.contentType == .text {
+                                            onCopy(item.content)
+                                        } else if let image = item.image {
+                                            onCopyImage?(image)
+                                        }
+                                    },
+                                    onToggleFavorite: {
+                                        historyStore.toggleFavorite(for: item)
+                                    }
+                                )
+                            } else if themeManager.currentTheme == .glassmorphism {
+                                GlassClipboardRow(
                                     item: item,
                                     showFavoriteButton: true,
                                     onCopy: {
@@ -472,8 +641,8 @@ struct MenuBarView: View {
                             }
                         }
                     }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
+                    .padding(.horizontal, themeManager.currentTheme == .glassmorphism ? 10 : 8)
+                    .padding(.vertical, themeManager.currentTheme == .glassmorphism ? 8 : 4)
                 }
             }
         }

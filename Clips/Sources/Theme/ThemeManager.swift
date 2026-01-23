@@ -5,20 +5,23 @@ import AppKit
 enum AppTheme: String, CaseIterable, Identifiable {
     case pixel = "Pixel"
     case terminal = "Terminal"
-    
+    case glassmorphism = "Glassmorphism"
+
     var id: String { rawValue }
-    
+
     var displayName: String {
         switch self {
         case .pixel: return "Pixel Art"
         case .terminal: return "Terminal CLI"
+        case .glassmorphism: return "Glassmorphism"
         }
     }
-    
+
     var description: String {
         switch self {
         case .pixel: return "复古像素艺术风格"
         case .terminal: return "终端命令行风格"
+        case .glassmorphism: return "现代玻璃拟态风格"
         }
     }
 }
@@ -50,7 +53,7 @@ class ThemeManager: ObservableObject {
 }
 
 // MARK: - Unified Theme Protocol
-// 提供统一的主题接口，方便视图使用
+// 提供统一的主题接口,方便视图使用
 struct Theme {
     static var current: ThemeColors {
         switch ThemeManager.shared.currentTheme {
@@ -58,6 +61,8 @@ struct Theme {
             return PixelThemeColors()
         case .terminal:
             return TerminalThemeColors()
+        case .glassmorphism:
+            return GlassmorphismThemeColors()
         }
     }
 }
@@ -114,9 +119,28 @@ struct TerminalThemeColors: ThemeColors {
     var textMuted: Color { TerminalTheme.textMuted }
     var border: Color { TerminalTheme.border }
     var borderHighlight: Color { TerminalTheme.borderHighlight }
-    
+
     func font(size: CGFloat) -> Font { TerminalTheme.terminalFont(size: size) }
     func fontBold(size: CGFloat) -> Font { TerminalTheme.terminalFontBold(size: size) }
+}
+
+struct GlassmorphismThemeColors: ThemeColors {
+    var background: Color { GlassmorphismTheme.background }
+    var cardBackground: Color { GlassmorphismTheme.cardBackground }
+    var headerBackground: Color { GlassmorphismTheme.headerBackground }
+    var primary: Color { GlassmorphismTheme.primary }
+    var secondary: Color { GlassmorphismTheme.secondary }
+    var accent: Color { GlassmorphismTheme.accent }
+    var danger: Color { GlassmorphismTheme.danger }
+    var warning: Color { GlassmorphismTheme.warning }
+    var textPrimary: Color { GlassmorphismTheme.textPrimary }
+    var textSecondary: Color { GlassmorphismTheme.textSecondary }
+    var textMuted: Color { GlassmorphismTheme.textMuted }
+    var border: Color { GlassmorphismTheme.border }
+    var borderHighlight: Color { GlassmorphismTheme.borderHighlight }
+
+    func font(size: CGFloat) -> Font { GlassmorphismTheme.glassFont(size: size) }
+    func fontBold(size: CGFloat) -> Font { GlassmorphismTheme.glassFontBold(size: size) }
 }
 
 // MARK: - Theme Picker View
@@ -228,6 +252,8 @@ struct ThemeOptionCard: View {
             return PixelTheme.primary
         case .terminal:
             return TerminalTheme.primary
+        case .glassmorphism:
+            return GlassmorphismTheme.primary
         }
     }
 }
