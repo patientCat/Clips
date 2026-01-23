@@ -1,5 +1,6 @@
 import SwiftUI
 import AppKit
+import UniformTypeIdentifiers
 
 struct FileShelfView: View {
     @ObservedObject var store: FileShelfStore
@@ -34,7 +35,7 @@ struct FileShelfView: View {
                 // Background drop target
                 Color.clear
                     .contentShape(Rectangle())
-                    .onDrop(of: ["public.file-url"], isTargeted: nil) { providers in
+                    .onDrop(of: [.fileURL], isTargeted: nil) { providers in
                         handleDrop(providers: providers)
                     }
 
@@ -54,19 +55,30 @@ struct FileShelfView: View {
                     }
                     .allowsHitTesting(false)
                 } else {
-                    List(selection: $selection) {
-                        ForEach(store.files) { file in
-                            FileShelfRow(file: file)
-                                .listRowBackground(
-                                    selection.contains(file.id) ? 
-                                    PixelTheme.primary.opacity(0.2) : Color.clear
+                    ScrollView {
+                        LazyVStack(spacing: 4) {
+                            ForEach(store.files) { file in
+                                FileShelfRow(
+                                    file: file,
+                                    isSelected: selection.contains(file.id),
+                                    allSelectedFiles: selection.count > 1 && selection.contains(file.id)
+                                        ? store.files.filter { selection.contains($0.id) }
+                                        : [file]
                                 )
-                                .listRowSeparator(.hidden)
-                                .listRowInsets(EdgeInsets(top: 2, leading: 8, bottom: 2, trailing: 8))
+                                .onTapGesture {
+                                    if NSEvent.modifierFlags.contains(.command) {
+                                        if selection.contains(file.id) {
+                                            selection.remove(file.id)
+                                        } else {
+                                            selection.insert(file.id)
+                                        }
+                                    } else {
+                                        selection = [file.id]
+                                    }
+                                }
                                 .contextMenu {
                                     Button("Delete") {
                                         if selection.contains(file.id) && selection.count > 1 {
-                                            // Delete all selected files
                                             for id in selection {
                                                 store.removeFile(id: id)
                                             }
@@ -75,29 +87,17 @@ struct FileShelfView: View {
                                             store.removeFile(id: file.id)
                                         }
                                     }
-                                }
-                                .onDrag {
-                                    // If this file is in selection and multiple selected, drag all
-                                    if selection.contains(file.id) && selection.count > 1 {
-                                        let selectedFiles = store.files.filter { selection.contains($0.id) }
-                                        let urls = selectedFiles.map { $0.url as NSURL }
-                                        // Register multiple URLs via pasteboard item
-                                        let provider = NSItemProvider()
-                                        for url in urls {
-                                            provider.registerObject(url, visibility: .all)
-                                        }
-                                        return provider
-                                    } else {
-                                        // Single file drag
-                                        return NSItemProvider(object: file.url as NSURL)
+                                    Button("Show in Finder") {
+                                        NSWorkspace.shared.activateFileViewerSelecting([file.url])
                                     }
                                 }
+                            }
                         }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
                     }
-                    .listStyle(.plain)
-                    .scrollContentBackground(.hidden)
                     .background(PixelTheme.background)
-                    .onDrop(of: ["public.file-url"], isTargeted: nil) { providers in
+                    .onDrop(of: [.fileURL], isTargeted: nil) { providers in
                         handleDrop(providers: providers)
                     }
                 }
@@ -120,8 +120,11 @@ struct FileShelfView: View {
     }
 }
 
+// MARK: - File Shelf Row with proper drag support
 struct FileShelfRow: View {
     let file: ShelvedFile
+    let isSelected: Bool
+    let allSelectedFiles: [ShelvedFile]
     
     var body: some View {
         HStack(spacing: 8) {
@@ -138,8 +141,42 @@ struct FileShelfRow: View {
             
             Spacer()
         }
-        .padding(.horizontal, 4)
-        .padding(.vertical, 6)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .background(isSelected ? PixelTheme.primary.opacity(0.2) : PixelTheme.cardBackground)
+        .pixelBorder(color: isSelected ? PixelTheme.primary : PixelTheme.borderHighlight, width: 1)
         .contentShape(Rectangle())
+        .onDrag {
+            createDragProvider(for: allSelectedFiles)
+        }
+    }
+    
+    private func createDragProvider(for files: [ShelvedFile]) -> NSItemProvider {
+        let urls = files.map { $0.url }
+        
+        // Use the first file's URL for the provider
+        guard let firstURL = urls.first else {
+            return NSItemProvider()
+        }
+        
+        let provider = NSItemProvider()
+        
+        // Register file promise - this allows Finder to receive the file
+        provider.registerFileRepresentation(
+            forTypeIdentifier: UTType.fileURL.identifier,
+            fileOptions: [.openInPlace],
+            visibility: .all
+        ) { completion in
+            completion(firstURL, true, nil)
+            return nil
+        }
+        
+        // Also register as URL for compatibility
+        provider.registerObject(firstURL as NSURL, visibility: .all)
+        
+        // Set suggested name
+        provider.suggestedName = firstURL.lastPathComponent
+        
+        return provider
     }
 }
