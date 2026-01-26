@@ -18,8 +18,6 @@ SOURCES = $(SRC_DIR)/Models/Models.swift \
           $(SRC_DIR)/Services/KeyValueStore.swift \
           $(SRC_DIR)/Services/RestReminderStore.swift \
           $(SRC_DIR)/Services/FileShelfStore.swift \
-          $(SRC_DIR)/Theme/PixelTheme.swift \
-          $(SRC_DIR)/Theme/TerminalTheme.swift \
           $(SRC_DIR)/Theme/GlassmorphismTheme.swift \
           $(SRC_DIR)/Theme/ThemeManager.swift \
           $(SRC_DIR)/Views/KeyValueView.swift \
