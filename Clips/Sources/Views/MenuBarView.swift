@@ -69,7 +69,7 @@ struct MenuBarView: View {
                 Rectangle().fill(.ultraThinMaterial)
             }
         )
-        .frame(minWidth: 450, maxWidth: .infinity, minHeight: 550, maxHeight: .infinity)
+        .frame(minWidth: 580, maxWidth: .infinity, minHeight: 650, maxHeight: .infinity)
     }
     
     // MARK: - Header View
