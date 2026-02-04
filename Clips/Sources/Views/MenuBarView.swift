@@ -15,6 +15,7 @@ struct MenuBarView: View {
     @ObservedObject var kvStore: KeyValueStore
     @ObservedObject var reminderStore: RestReminderStore
     @ObservedObject var fileShelfStore: FileShelfStore
+    @ObservedObject var plantStore: PlantGrowthStore
     var onCopy: (String) -> Void
     var onCopyImage: ((NSImage) -> Void)?
     var onQuit: () -> Void
@@ -22,6 +23,7 @@ struct MenuBarView: View {
     @State private var selectedTab: ClipsTab = .history
     @State private var searchText: String = ""
     @State private var showHelp: Bool = false
+    @State private var showPlant: Bool = false
     
     var filteredHistory: [ClipboardItem] {
         if searchText.isEmpty {
@@ -39,14 +41,18 @@ struct MenuBarView: View {
             // Header
             headerView
             
-            // Tab bar
-            tabBarView
+            // Tab bar (仅在非植物/帮助模式时显示)
+            if !showPlant && !showHelp {
+                tabBarView
+            }
             
             // Content area
             ZStack {
                 GlassGradientBackground()
                 
-                if showHelp {
+                if showPlant {
+                    PlantGrowthView(store: plantStore)
+                } else if showHelp {
                     HelpView()
                 } else if selectedTab == .history {
                     historyView
@@ -84,8 +90,26 @@ struct MenuBarView: View {
             
             Spacer()
             
+            // Plant button (绿色植物图标)
+            Button(action: { 
+                showPlant.toggle()
+                if showPlant { showHelp = false }
+            }) {
+                Image(systemName: showPlant ? "leaf.fill" : "leaf")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(showPlant ? Color.green : GlassmorphismTheme.textMuted)
+            }
+            .buttonStyle(.plain)
+            .onHover { hovering in
+                if hovering { NSCursor.pointingHand.push() } else { NSCursor.pop() }
+            }
+            .padding(.trailing, 4)
+            
             // Help button
-            Button(action: { showHelp.toggle() }) {
+            Button(action: { 
+                showHelp.toggle()
+                if showHelp { showPlant = false }
+            }) {
                 Image(systemName: showHelp ? "questionmark.circle.fill" : "questionmark.circle")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(showHelp ? GlassmorphismTheme.primary : GlassmorphismTheme.textMuted)

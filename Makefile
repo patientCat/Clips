@@ -18,6 +18,7 @@ SOURCES = $(SRC_DIR)/Models/Models.swift \
           $(SRC_DIR)/Services/KeyValueStore.swift \
           $(SRC_DIR)/Services/RestReminderStore.swift \
           $(SRC_DIR)/Services/FileShelfStore.swift \
+          $(SRC_DIR)/Services/PlantGrowthStore.swift \
           $(SRC_DIR)/Theme/GlassmorphismTheme.swift \
           $(SRC_DIR)/Theme/ThemeManager.swift \
           $(SRC_DIR)/Views/KeyValueView.swift \
@@ -25,6 +26,7 @@ SOURCES = $(SRC_DIR)/Models/Models.swift \
           $(SRC_DIR)/Views/RestReminderView.swift \
           $(SRC_DIR)/Views/FileShelfView.swift \
           $(SRC_DIR)/Views/HelpView.swift \
+          $(SRC_DIR)/Views/PlantGrowthView.swift \
           $(SRC_DIR)/Views/MenuBarView.swift \
           $(SRC_DIR)/App/ClipsApp.swift
 

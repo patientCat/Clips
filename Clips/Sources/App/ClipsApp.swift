@@ -98,6 +98,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     let kvStore = KeyValueStore.shared
     let reminderStore = RestReminderStore.shared
     let fileShelfStore = FileShelfStore()
+    var plantStore: PlantGrowthStore!
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         // 设置通知代理，确保前台也能显示通知
@@ -105,6 +106,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         
         // Initialize Core Services
         historyStore = HistoryStore(clipboardService: clipboardService)
+        plantStore = PlantGrowthStore(clipboardService: clipboardService)
         
         // 先启动监控，确保能捕获剪贴板变化
         clipboardService.startMonitoring()
@@ -186,6 +188,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             kvStore: kvStore,
             reminderStore: reminderStore,
             fileShelfStore: fileShelfStore,
+            plantStore: plantStore,
             onCopy: { [weak self] content in
                 self?.clipboardService.copyToClipboard(content)
             },
@@ -250,6 +253,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             kvStore: kvStore,
             reminderStore: reminderStore,
             fileShelfStore: fileShelfStore,
+            plantStore: plantStore,
             onCopy: { [weak self] content in
                 self?.clipboardService.copyToClipboard(content)
                 self?.closePopover(sender: nil)
@@ -336,6 +340,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             kvStore: kvStore,
             reminderStore: reminderStore,
             fileShelfStore: fileShelfStore,
+            plantStore: plantStore,
             onCopy: { [weak self] content in
                 self?.clipboardService.copyToClipboard(content)
                 self?.closeFloatingWindow()
