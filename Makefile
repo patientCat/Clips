@@ -24,6 +24,7 @@ SOURCES = $(SRC_DIR)/Models/Models.swift \
           $(SRC_DIR)/Views/JsonFormatterView.swift \
           $(SRC_DIR)/Views/RestReminderView.swift \
           $(SRC_DIR)/Views/FileShelfView.swift \
+          $(SRC_DIR)/Views/HelpView.swift \
           $(SRC_DIR)/Views/MenuBarView.swift \
           $(SRC_DIR)/App/ClipsApp.swift
 

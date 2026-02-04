@@ -21,6 +21,7 @@ struct MenuBarView: View {
     
     @State private var selectedTab: ClipsTab = .history
     @State private var searchText: String = ""
+    @State private var showHelp: Bool = false
     
     var filteredHistory: [ClipboardItem] {
         if searchText.isEmpty {
@@ -45,7 +46,9 @@ struct MenuBarView: View {
             ZStack {
                 GlassGradientBackground()
                 
-                if selectedTab == .history {
+                if showHelp {
+                    HelpView()
+                } else if selectedTab == .history {
                     historyView
                 } else if selectedTab == .favorites {
                     favoritesView
@@ -55,7 +58,7 @@ struct MenuBarView: View {
                     JsonFormatterView(onCopy: onCopy)
                 } else if selectedTab == .reminder {
                     RestReminderView(store: reminderStore)
-                } else {
+                } else if selectedTab == .shelf {
                     FileShelfView(store: fileShelfStore)
                 }
             }
@@ -80,6 +83,18 @@ struct MenuBarView: View {
                 .foregroundColor(GlassmorphismTheme.textPrimary)
             
             Spacer()
+            
+            // Help button
+            Button(action: { showHelp.toggle() }) {
+                Image(systemName: showHelp ? "questionmark.circle.fill" : "questionmark.circle")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(showHelp ? GlassmorphismTheme.primary : GlassmorphismTheme.textMuted)
+            }
+            .buttonStyle(.plain)
+            .onHover { hovering in
+                if hovering { NSCursor.pointingHand.push() } else { NSCursor.pop() }
+            }
+            .padding(.trailing, 8)
             
             // Decorative indicators
             HStack(spacing: 4) {

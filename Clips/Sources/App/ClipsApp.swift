@@ -87,7 +87,7 @@ class HotkeyManager {
     }
 }
 
-class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate, NSWindowDelegate {
     var statusItem: NSStatusItem?
     var popover: NSPopover!
     var floatingWindow: NSWindow?
@@ -199,17 +199,29 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         
         let hostingController = NSHostingController(rootView: menuView)
         
-        mainWindow = NSWindow(
+        let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 450, height: 550),
             styleMask: [.titled, .closable, .miniaturizable, .resizable],
             backing: .buffered,
             defer: false
         )
         
-        mainWindow?.contentViewController = hostingController
-        mainWindow?.title = "Clips"
-        mainWindow?.center()
-        mainWindow?.makeKeyAndOrderFront(nil)
+        window.contentViewController = hostingController
+        window.title = "Clips"
+        window.delegate = self
+        window.isReleasedWhenClosed = false  // 防止窗口关闭时被释放
+        window.center()
+        window.makeKeyAndOrderFront(nil)
+        
+        mainWindow = window
+    }
+    
+    // MARK: - NSWindowDelegate
+    func windowWillClose(_ notification: Notification) {
+        if let window = notification.object as? NSWindow, window === mainWindow {
+            // 主窗口关闭时，清理引用
+            mainWindow = nil
+        }
     }
     
     private func setupStatusItem() {
@@ -265,6 +277,38 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     
     func applicationWillTerminate(_ notification: Notification) {
         HotkeyManager.shared.unregister()
+    }
+    
+    // MARK: - Dock 图标点击处理
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        // 当用户点击 Dock 图标时
+        if !flag {
+            // 没有可见窗口时
+            if let window = mainWindow, window.contentView != nil {
+                // 如果窗口是最小化状态，恢复它
+                if window.isMiniaturized {
+                    window.deminiaturize(nil)
+                } else {
+                    window.makeKeyAndOrderFront(nil)
+                }
+            } else {
+                // 窗口不存在或已失效，重新创建
+                mainWindow = nil
+                createMainWindow()
+            }
+            NSApp.activate(ignoringOtherApps: true)
+        } else {
+            // 有可见窗口时，确保激活
+            mainWindow?.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+        }
+        return true
+    }
+    
+    // MARK: - 窗口关闭处理
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        // 返回 false 确保关闭所有窗口后应用不会退出
+        return false
     }
     
     private func requestAccessibilityPermission() {

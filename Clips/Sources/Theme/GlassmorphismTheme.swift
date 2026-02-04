@@ -44,6 +44,10 @@ struct GlassmorphismTheme {
     static func glassFontBold(size: CGFloat) -> Font {
         .system(size: size, weight: .semibold, design: .default)
     }
+    
+    static func glassFontMono(size: CGFloat) -> Font {
+        .system(size: size, weight: .medium, design: .monospaced)
+    }
 }
 
 // MARK: - VisualEffectView (AppKit Wrapper for Desktop Wallpaper Bleed-through)
